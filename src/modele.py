@@ -54,7 +54,7 @@ class Modele:
 
     def predire(self, X) -> np.ndarray:
         """Renvoie les indices de performance prédits pour les lignes de X."""
-        raise NotImplementedError
+        return self._estimateur.predict(X)
 
     def sauvegarder(self, dossier: str, metadonnees: dict) -> None:
         """Écrit le modèle (joblib) et les métadonnées (JSON) dans `dossier`.

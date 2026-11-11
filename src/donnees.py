@@ -113,6 +113,14 @@ class VariableNumerique(Variable):
         self._minimum = minimum
         self._maximum = maximum
 
+    @property
+    def minimum(self) -> float:
+        return self._minimum
+
+    @property
+    def maximum(self) -> float:
+        return self._maximum    
+
     def valider(self, saisie: str) -> float:
         """Convertit la saisie en nombre et vérifie qu'elle est dans [minimum, maximum].
 
