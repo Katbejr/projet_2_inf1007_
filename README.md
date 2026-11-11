@@ -7,7 +7,7 @@ Application qui estime l'indice de performance d'un étudiant (10 à 100) à par
 ## Jeu de données
 - Nom : Student Performance (Multiple Linear Regression)
 - Source : https://www.kaggle.com/datasets/nikhil7280/student-performance-multiple-linear-regression
-- Licence : _à compléter (onglet Data / Metadata de la page Kaggle)_
+- Licence : libre de partage et d’utilisation (« Anyone is free to share and use the data », page Kaggle) ; compatible avec un usage éducatif et la redistribution dans ce dépôt public
 - 10 000 lignes, 5 caractéristiques (4 numériques, 1 catégorielle), cible : `Performance Index` (régression)
 - Fichier : `donnees/Student_Performance.csv`
 

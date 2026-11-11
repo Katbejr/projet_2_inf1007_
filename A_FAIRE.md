@@ -2,12 +2,12 @@
 
 ## Étape 0 — mise en place
 - [x] Structure de dossiers, README, requirements.txt, workflow CI, premier test
-- [ ] Créer le dépôt GitHub public, y inviter Alex, premier push, CI verte
-- [ ] Licence du jeu de données notée dans le README
+- [x] Créer le dépôt GitHub public, y inviter Alex, premier push, CI verte
+- [x] Licence du jeu de données notée dans le README
 
 ## Volet 1 — données (`src/donnees.py`)
-- [ ] Validations A (domaine) et B (jeu de données) avec l'auxiliaire
-- [ ] `JeuDeDonnees.inspecter` : types, valeurs manquantes (0), doublons (127), aberrantes
+- [x] Validations A (domaine) et B (jeu de données) avec l'auxiliaire
+- [] `JeuDeDonnees.inspecter` : types, valeurs manquantes (0), doublons (127), aberrantes
 - [ ] `JeuDeDonnees.nettoyer` : doublons + encodage Yes/No
 - [ ] Graphique d'exploration enregistré avec `savefig`
 

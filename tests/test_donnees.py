@@ -4,7 +4,8 @@ import pytest
 from exceptions import DonneeInvalideError
 
 
-def test_exception_personnalisee_peut_etre_levee() -> None:
-    """Vérifie que DonneeInvalideError hérite de Exception et se lève avec raise."""
-    with pytest.raises(DonneeInvalideError):
-        raise DonneeInvalideError("saisie invalide")
+def test_nettoyer_encode_yes_no() -> None:
+    jeu = JeuDeDonnees("donnees/Student_Performance.csv")
+    jeu.nettoyer()
+    valeurs = set(jeu.df["Extracurricular Activities"].unique())
+    assert valeurs == {0, 1}

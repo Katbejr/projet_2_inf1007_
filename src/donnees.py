@@ -3,38 +3,74 @@ import csv
 import os
 
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 COLONNE_CIBLE = "Performance Index"
 NUMERIQUES = ["Hours Studied", "Previous Scores", "Sleep Hours",
               "Sample Question Papers Practiced"]
 CATEGORIELLES = ["Extracurricular Activities"]
 
+# Bornes logiques (min, max) pour repérer les valeurs aberrantes
+BORNES = {
+    "Hours Studied": (0, 24),
+    "Previous Scores": (0, 100),
+    "Sleep Hours": (0, 24),
+    "Sample Question Papers Practiced": (0, 100),
+    "Performance Index": (0, 100),
+}
+
 
 class JeuDeDonnees:
     """Charge le CSV et prépare les données pour le modèle."""
 
     def __init__(self, chemin: str) -> None:
-        # TODO (toi) : vérifier os.path.exists(chemin), sinon lever une exception
+        if not os.path.exists(chemin):
+            raise FileNotFoundError(f"Fichier introuvable : {chemin}")
         self._chemin = chemin
         self._df = pd.read_csv(chemin)
 
     def inspecter(self) -> dict:
-        """Renvoie un résumé : nombre de lignes, types, valeurs manquantes, doublons."""
-        raise NotImplementedError
+        """Renvoie un résumé : nombre de lignes, types, valeurs manquantes,
+        doublons et valeurs aberrantes (hors des bornes logiques)."""
+        df = self._df
+        aberrantes = {}
+        for col, (mini, maxi) in BORNES.items():
+            aberrantes[col] = int(((df[col] < mini) | (df[col] > maxi)).sum())
+        return {
+            "nb_lignes": len(df),
+            "types": df.dtypes.astype(str).to_dict(),
+            "manquantes": df.isna().sum().to_dict(),
+            "doublons": int(df.duplicated().sum()),
+            "aberrantes": aberrantes,
+        }
 
     def nettoyer(self) -> None:
-        """Supprime doublons / lignes invalides et encode « Yes »/« No » en 1/0."""
-        raise NotImplementedError
+        """Encode « Yes »/« No » en 1/0.
 
-    def separer(self, taille_test: float = 0.2, graine: int = 42):
-        """Renvoie X_train, X_test, y_train, y_test (train_test_split, graine fixée)."""
-        raise NotImplementedError
+        Les doublons sont conservés (voir DECISIONS.md).
+        Sans effet si la colonne est déjà encodée.
+        """
+        col = CATEGORIELLES[0]
+        if self._df[col].dtype != object:
+            return
+        self._df[col] = self._df[col].map({"Yes": 1, "No": 0})
+
+    def separer(self, taille_test: float = 0.2, graine: int = 42) -> tuple:
+        """Renvoie X_train, X_test, y_train, y_test (train_test_split, graine fixée).
+
+        Appeler nettoyer() avant, pour que toutes les colonnes soient numériques.
+        """
+        y = self._df[COLONNE_CIBLE]
+        X = self._df.drop(columns=[COLONNE_CIBLE])
+        return train_test_split(X, y, test_size=taille_test, random_state=graine)
 
     @property
     def df(self) -> pd.DataFrame:
+        """Copie du tableau (lecture seule)."""
         return self._df.copy()
 
     def __len__(self) -> int:
+        """Nombre de lignes du jeu de données."""
         return len(self._df)
 # ---------------------------------------------------------------------------
 # Classes de variables (ch. 9 à 11 : héritage, polymorphisme, encapsulation)
