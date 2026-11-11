@@ -12,3 +12,16 @@ Dans test_donnees.py :
 
 Écris chaque test seulement quand la fonction testée est codée : la CI doit rester verte.
 """
+from donnees import JeuDeDonnees
+from modele import Modele
+
+
+def test_modele_bat_la_reference() -> None:
+    """La régression a une MAE plus faible que la moyenne (cas usuel)."""
+    jeu = JeuDeDonnees("donnees/Student_Performance.csv")
+    jeu.nettoyer()
+    X_train, X_test, y_train, y_test = jeu.separer()
+    m = Modele()
+    m.entrainer(X_train, y_train)
+    resultats = m.evaluer(X_test, y_test)
+    assert resultats["mae"] < resultats["mae_reference"]

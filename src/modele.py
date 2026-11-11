@@ -1,25 +1,14 @@
 """Entraînement, évaluation, sauvegarde et prédiction du modèle."""
 import json
 import os
-import time
-from functools import wraps
 
 import joblib
 import numpy as np
 from sklearn.dummy import DummyRegressor
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
 from exceptions import ModeleIntrouvableError
-
-
-def chronometre(fonction):
-    """Décorateur (outil du ch. 7) : affiche la durée d'exécution de la fonction."""
-    @wraps(fonction)
-    def enveloppe(*args, **kwargs):
-        # TODO (toi) : debut = time.perf_counter() ; resultat = fonction(...) ;
-        #              afficher la durée ; return resultat
-        raise NotImplementedError
-    return enveloppe
 
 
 def mae_numpy(y_vrai: np.ndarray, y_predit: np.ndarray) -> float:
@@ -28,8 +17,7 @@ def mae_numpy(y_vrai: np.ndarray, y_predit: np.ndarray) -> float:
     Un test vérifiera qu'elle égale sklearn.metrics.mean_absolute_error.
     """
     # TODO (toi) : une seule ligne avec np.abs et np.mean
-    raise NotImplementedError
-
+    return float(np.mean(np.abs(np.asarray(y_vrai) - np.asarray(y_predit))))
 
 class Modele:
     """Enveloppe le modèle scikit-learn, sa référence et ses métadonnées."""
@@ -42,16 +30,27 @@ class Modele:
         self._reference = DummyRegressor(strategy="mean")
         self._metadonnees: dict = {}
 
-    @chronometre
     def entrainer(self, X_train, y_train) -> None:
         """Entraîne le modèle ET la référence sur l'ensemble d'entraînement."""
-        # TODO (toi) : .fit() sur self._estimateur et self._reference
-        raise NotImplementedError
-
+        self.X_train =X_train
+        self.y_train = y_train
+        self._estimateur.fit(X_train, y_train)
+        self._reference.fit(X_train, y_train)
     def evaluer(self, X_test, y_test) -> dict:
-        """Renvoie {"mae": ..., "r2": ..., "mae_reference": ..., "r2_reference": ...}."""
+        """Note le modèle et la référence sur l'ensemble de test (aucun fit ici).
+        
+                Renvoie {"mae": ..., "r2": ..., "mae_reference": ..., "r2_reference": ...}.
+                """
         # TODO (toi) : reprendre la logique de regression_lineaire.py
-        raise NotImplementedError
+        pred_modele = self._estimateur.predict(X_test)
+        pred_reference = self._reference.predict(X_test)
+        return {
+            "mae": mae_numpy(y_test, pred_modele),
+            "r2": float(r2_score(y_test, pred_modele)),
+            "mae_reference": mae_numpy(y_test, pred_reference),
+            "r2_reference": float(r2_score(y_test, pred_reference)),
+        }
+
 
     def predire(self, X) -> np.ndarray:
         """Renvoie les indices de performance prédits pour les lignes de X."""
