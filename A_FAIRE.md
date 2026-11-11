@@ -7,9 +7,9 @@
 
 ## Volet 1 — données (`src/donnees.py`)
 - [x] Validations A (domaine) et B (jeu de données) avec l'auxiliaire
-- [] `JeuDeDonnees.inspecter` : types, valeurs manquantes (0), doublons (127), aberrantes
-- [ ] `JeuDeDonnees.nettoyer` : doublons + encodage Yes/No
-- [ ] Graphique d'exploration enregistré avec `savefig`
+- [x] `JeuDeDonnees.inspecter` : types, valeurs manquantes (0), doublons (127), aberrantes
+- [x] `JeuDeDonnees.nettoyer` : doublons + encodage Yes/No
+- [x] Graphique d'exploration enregistré avec `savefig`
 
 ## Volet 2 — modèle (`src/modele.py`)
 - [ ] Validation C : cible, métrique, modèle
