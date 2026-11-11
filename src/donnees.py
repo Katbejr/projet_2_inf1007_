@@ -143,12 +143,16 @@ class VariableCategorielle(Variable):
     def valeurs(self) -> list[str]:
         """Valeurs possibles (pour remplir la liste déroulante)."""
         return list(self._valeurs)
-
     def valider(self, saisie: str) -> str:
-        # TODO (toi) : saisie absente de self._valeurs -> raise DonneeInvalideError(...)
-        #              sinon return saisie
-        raise NotImplementedError
+        """Vérifie que la saisie fait partie des valeurs permises.
 
+        Échoue : DonneeInvalideError si la valeur n'est pas dans la liste.
+        """
+        if saisie not in self._valeurs:
+            raise DonneeInvalideError(
+                f"{self.nom} : choisir parmi {', '.join(self._valeurs)}."
+            )
+        return saisie
 
 # ---------------------------------------------------------------------------
 # Historique des prédictions (ch. 5 : os, with, vérifier l'existence)
@@ -158,12 +162,17 @@ def ajouter_historique(chemin: str, ligne: dict) -> None:
 
     Crée le fichier avec l'en-tête s'il n'existe pas encore.
     """
-    # TODO (toi) : os.path.exists(chemin) ; with open(chemin, "a", newline="", encoding="utf-8") ;
-    #              csv.DictWriter, writeheader() seulement si le fichier est nouveau
-    raise NotImplementedError
+    nouveau = not os.path.exists(chemin)
+    with open(chemin, "a", newline="", encoding="utf-8") as f:
+        ecrivain = csv.DictWriter(f, fieldnames=list(ligne.keys()))
+        if nouveau:
+            ecrivain.writeheader()
+        ecrivain.writerow(ligne)
 
 
 def lire_historique(chemin: str) -> list[dict]:
     """Renvoie la liste des prédictions passées ([] si le fichier n'existe pas)."""
-    # TODO (toi) : with open(...) + csv.DictReader
-    raise NotImplementedError
+    if not os.path.exists(chemin):
+        return []
+    with open(chemin, newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))

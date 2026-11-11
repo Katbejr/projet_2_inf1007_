@@ -1,9 +1,14 @@
 """Tests du module donnees."""
 import pytest
 
-from donnees import JeuDeDonnees
+from donnees import (
+    JeuDeDonnees,
+    VariableCategorielle,
+    VariableNumerique,
+    ajouter_historique,
+    lire_historique,
+)
 from exceptions import DonneeInvalideError
-from donnees import VariableNumerique
 
 CHEMIN = "donnees/Student_Performance.csv"
 
@@ -42,18 +47,48 @@ def test_separer_tailles() -> None:
     X_train, X_test, y_train, y_test = jeu.separer()
     assert len(X_train) == 7000 and len(X_test) == 3000
     assert "Performance Index" not in X_train.columns
+
+
 def test_numerique_valide() -> None:
+    """Saisie numérique dans l'intervalle (cas usuel)."""
     v = VariableNumerique("Sleep Hours", 4, 9)
     assert v.valider("7") == pytest.approx(7.0)
 
 
 def test_numerique_borne_exacte() -> None:
+    """Borne maximale acceptée (cas limite)."""
     v = VariableNumerique("Sleep Hours", 4, 9)
     assert v.valider("9") == pytest.approx(9.0)
 
 
 @pytest.mark.parametrize("saisie", ["", "   ", "abc", "12"])
 def test_numerique_invalide(saisie: str) -> None:
+    """Vide, espaces, texte ou hors intervalle : erreur (cas d'erreur)."""
     v = VariableNumerique("Sleep Hours", 4, 9)
     with pytest.raises(DonneeInvalideError):
         v.valider(saisie)
+
+
+def test_categorielle_valide() -> None:
+    """Valeur permise acceptée (cas usuel)."""
+    v = VariableCategorielle("Extracurricular Activities", ["Yes", "No"])
+    assert v.valider("Yes") == "Yes"
+
+
+@pytest.mark.parametrize("saisie", ["", "Oui", "yes"])
+def test_categorielle_invalide(saisie: str) -> None:
+    """Vide, autre langue ou mauvaise casse : erreur (cas d'erreur)."""
+    v = VariableCategorielle("Extracurricular Activities", ["Yes", "No"])
+    with pytest.raises(DonneeInvalideError):
+        v.valider(saisie)
+
+
+def test_historique_ajoute_puis_relit(tmp_path) -> None:
+    """Deux ajouts puis relecture : en-tête unique, deux lignes (cas usuel)."""
+    chemin = str(tmp_path / "historique.csv")
+    assert lire_historique(chemin) == []
+    ajouter_historique(chemin, {"heures": 7, "prediction": 72.5})
+    ajouter_historique(chemin, {"heures": 3, "prediction": 41.0})
+    lignes = lire_historique(chemin)
+    assert len(lignes) == 2
+    assert lignes[0]["prediction"] == "72.5"
