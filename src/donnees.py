@@ -55,7 +55,7 @@ class JeuDeDonnees:
             return
         self._df[col] = self._df[col].map({"Yes": 1, "No": 0})
 
-    def separer(self, taille_test: float = 0.2, graine: int = 42) -> tuple:
+    def separer(self, taille_test: float = 0.3, graine: int = 42) -> tuple:
         """Renvoie X_train, X_test, y_train, y_test (train_test_split, graine fixée).
 
         Appeler nettoyer() avant, pour que toutes les colonnes soient numériques.
@@ -114,13 +114,22 @@ class VariableNumerique(Variable):
         self._maximum = maximum
 
     def valider(self, saisie: str) -> float:
-        # TODO (toi) :
-        # 1. saisie vide (après .strip()) -> raise DonneeInvalideError(...)
-        # 2. convertir avec float() dans un try / except ValueError
-        #    -> raise DonneeInvalideError(...) si non numérique
-        # 3. hors de [self._minimum, self._maximum] -> raise DonneeInvalideError(...)
-        # 4. return la valeur
-        raise NotImplementedError
+        """Convertit la saisie en nombre et vérifie qu'elle est dans [minimum, maximum].
+
+        Échoue : DonneeInvalideError si vide, non numérique ou hors intervalle.
+        """
+        if not saisie.strip():
+            raise DonneeInvalideError(f"{self.nom} : la saisie est vide.")
+        try:
+            valeur = float(saisie)
+        except ValueError:
+            raise DonneeInvalideError(f"{self.nom} : « {saisie} » n'est pas un nombre.")
+        if not self._minimum <= valeur <= self._maximum:
+            raise DonneeInvalideError(
+                f"{self.nom} : doit être entre {self._minimum} et {self._maximum}."
+            )
+        return valeur
+            
 
 
 class VariableCategorielle(Variable):

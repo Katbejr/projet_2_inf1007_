@@ -3,6 +3,7 @@ import pytest
 
 from donnees import JeuDeDonnees
 from exceptions import DonneeInvalideError
+from donnees import VariableNumerique
 
 CHEMIN = "donnees/Student_Performance.csv"
 
@@ -35,9 +36,24 @@ def test_nettoyer_deux_fois_reste_0_1() -> None:
 
 
 def test_separer_tailles() -> None:
-    """80 % entraînement, 20 % test, cible retirée de X (cas usuel)."""
+    """70 % entraînement, 30 % test, cible retirée de X (cas usuel)."""
     jeu = JeuDeDonnees(CHEMIN)
     jeu.nettoyer()
     X_train, X_test, y_train, y_test = jeu.separer()
-    assert len(X_train) == 8000 and len(X_test) == 2000
+    assert len(X_train) == 7000 and len(X_test) == 3000
     assert "Performance Index" not in X_train.columns
+def test_numerique_valide() -> None:
+    v = VariableNumerique("Sleep Hours", 4, 9)
+    assert v.valider("7") == pytest.approx(7.0)
+
+
+def test_numerique_borne_exacte() -> None:
+    v = VariableNumerique("Sleep Hours", 4, 9)
+    assert v.valider("9") == pytest.approx(9.0)
+
+
+@pytest.mark.parametrize("saisie", ["", "   ", "abc", "12"])
+def test_numerique_invalide(saisie: str) -> None:
+    v = VariableNumerique("Sleep Hours", 4, 9)
+    with pytest.raises(DonneeInvalideError):
+        v.valider(saisie)

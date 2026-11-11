@@ -81,3 +81,18 @@ class Modele:
 
     def __repr__(self) -> str:
         return f"Modele({type(self._estimateur).__name__})"
+class ModeleParGroupe:
+    """Deux régressions : une par valeur d'« Extracurricular Activities »."""
+
+    def __init__(self) -> None:
+        self._modeles = {0: Modele(), 1: Modele()}   # composition
+
+    def entrainer(self, X_train, y_train) -> None:
+        # pour chaque groupe g (0 et 1) :
+        #   masque = X_train[col] == g
+        #   entraîner self._modeles[g] sur X_train[masque] (sans la colonne) et y_train[masque]
+        ...
+
+    def predire(self, X):
+        # pour chaque ligne, utiliser le modèle de son groupe
+        ...
