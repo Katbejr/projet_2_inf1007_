@@ -63,8 +63,17 @@ class Modele:
         intervalles des numériques, métrique obtenue.
         """
         # TODO (toi) : os.path.join ; joblib.dump ; with open(..., "w", encoding="utf-8") + json.dump
-        raise NotImplementedError
+        os.makedirs(dossier, exist_ok=True)
+        chemin_modele = os.path.join(dossier, self.FICHIER_MODELE)
+        chemin_meta = os.path.join(dossier, self.FICHIER_META)
+        joblib.dump(self._estimateur, chemin_modele)
 
+        with open(chemin_meta, "w", encoding="utf-8") as f:
+            json.dump(metadonnees, f, indent=2, ensure_ascii=False)
+
+        self._metadonnees = dict(metadonnees)
+
+                                   
     @classmethod
     def charger(cls, dossier: str) -> "Modele":
         """Recharge un modèle sauvegardé.

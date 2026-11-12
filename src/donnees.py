@@ -27,7 +27,7 @@ class JeuDeDonnees:
         if not os.path.exists(chemin):
             raise FileNotFoundError(f"Fichier introuvable : {chemin}")
         self._chemin = chemin
-        self._df = pd.read_csv(chemin)
+        self._df = pd.read_csv(chemin) #lit le fichier tout les colonnes et lignes
 
     def inspecter(self) -> dict:
         """Renvoie un résumé : nombre de lignes, types, valeurs manquantes,
@@ -35,7 +35,7 @@ class JeuDeDonnees:
         df = self._df
         aberrantes = {}
         for col, (mini, maxi) in BORNES.items():
-            aberrantes[col] = int(((df[col] < mini) | (df[col] > maxi)).sum())
+            aberrantes[col] = int(((df[col] < mini) | (df[col] > maxi)).sum()) #somme de tout les donnees erreurs pour chaque colonne
         return {
             "nb_lignes": len(df),
             "types": df.dtypes.astype(str).to_dict(),
@@ -51,9 +51,9 @@ class JeuDeDonnees:
         Sans effet si la colonne est déjà encodée.
         """
         col = CATEGORIELLES[0]
-        if self._df[col].dtype != object:
+        if self._df[col].dtype != object: # check si contient du texte sinon return et laisse t.q.
             return
-        self._df[col] = self._df[col].map({"Yes": 1, "No": 0})
+        self._df[col] = self._df[col].map({"Yes": 1, "No": 0}) #transforme les Yes and No en 1 0, mais si valeur innatendu => NaN (.replace serait aussi ideal)
 
     def separer(self, taille_test: float = 0.3, graine: int = 42) -> tuple:
         """Renvoie X_train, X_test, y_train, y_test (train_test_split, graine fixée).
@@ -62,7 +62,8 @@ class JeuDeDonnees:
         """
         y = self._df[COLONNE_CIBLE]
         X = self._df.drop(columns=[COLONNE_CIBLE])
-        return train_test_split(X, y, test_size=taille_test, random_state=graine)
+        return train_test_split(X, y, test_size=taille_test, random_state=graine) #test => nouveau prediction, train => etudie resultat et donnees
+        #graine choisi un "shuffle"
 
     @property
     def df(self) -> pd.DataFrame:
@@ -151,6 +152,7 @@ class VariableCategorielle(Variable):
     def valeurs(self) -> list[str]:
         """Valeurs possibles (pour remplir la liste déroulante)."""
         return list(self._valeurs)
+    
     def valider(self, saisie: str) -> str:
         """Vérifie que la saisie fait partie des valeurs permises.
 
