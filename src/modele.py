@@ -80,8 +80,21 @@ class Modele:
 
         Échoue : ModeleIntrouvableError si un des deux fichiers est absent.
         """
-        # TODO (toi) : vérifier os.path.exists AVANT d'ouvrir ; joblib.load ; json.load
-        raise NotImplementedError
+        chemin_modele = os.path.join(dossier, cls.FICHIER_MODELE)
+        chemin_meta = os.path.join(dossier, cls.FICHIER_META)
+
+        if not os.path.exists(chemin_modele):
+            raise ModeleIntrouvableError(f"Modèle introuvable : {chemin_modele}")
+        if not os.path.exists(chemin_meta):
+            raise ModeleIntrouvableError(f"Métadonnées introuvables : {chemin_meta}")
+
+        estimateur = joblib.load(chemin_modele)
+        with open(chemin_meta, encoding="utf-8") as f:
+            metadonnees = json.load(f)
+
+        modele = cls(estimateur)
+        modele._estimateur = metadonnees
+        return modele
 
     @property
     def metadonnees(self) -> dict:
@@ -89,6 +102,8 @@ class Modele:
 
     def __repr__(self) -> str:
         return f"Modele({type(self._estimateur).__name__})"
+
+
 class ModeleParGroupe:
     """Deux régressions : une par valeur d'« Extracurricular Activities »."""
 
