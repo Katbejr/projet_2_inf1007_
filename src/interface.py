@@ -58,13 +58,26 @@ class Application:
         ttk.Label(self._cadre_formulaire, textvariable=self._resultat,
                   wraplength=300).grid(
             row=len(self._variables) + 1, column=0, columnspan=2, pady=10)
+
+        ttk.Button(self._cadre_formulaire, text="Prédire",
+                   command=self.predire).grid(
+            row=len(self._variables), column=0, columnspan=2, pady=10)
     
 
     def predire(self) -> None:
         """Bouton « Prédire » : valide chaque saisie (try / except DonneeInvalideError),
         affiche un message clair en cas d'erreur, sinon la prédiction en langage simple,
         puis l'ajoute à l'historique."""
-        raise NotImplementedError
+        valeurs = {}
+        try:
+            for variable in self._variables:
+                saisie = self._champs[variable.nom].get()
+                valeurs[variable.nom] = variable.valider(saisie)
+        except DonneeInvalideError as erreur:
+            messagebox.showerror("Saisie invalide", str(erreur))
+            return
+        self._resultat.set(f"Saisies valides : {valeurs}")
+        
 
     def creer_graphique(self) -> None:
         
