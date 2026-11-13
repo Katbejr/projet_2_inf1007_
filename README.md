@@ -2,7 +2,7 @@
 
 Application qui estime l'indice de performance d'un étudiant (10 à 100) à partir de ses habitudes d'étude, avec une interface graphique.
 
-**Équipe :** Alex · Joud Katbe
+**Équipe :** Alex · Joud Katbe · Mohamed Dahmani
 
 ## Jeu de données
 - Nom : Student Performance (Multiple Linear Regression)
