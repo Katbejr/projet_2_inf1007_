@@ -18,7 +18,8 @@ from sklearn.exceptions import NotFittedError
 from sklearn.metrics import mean_absolute_error
 
 from donnees import JeuDeDonnees
-from modele import Modele, mae_numpy
+from modele import Modele, mae_numpy, ModeleParGroupe
+
 
 CHEMIN = "donnees/Student_Performance.csv"
 
@@ -51,3 +52,19 @@ def test_modele_bat_la_reference() -> None:
     m.entrainer(X_train, y_train)
     resultats = m.evaluer(X_test, y_test)
     assert resultats["mae"] < resultats["mae_reference"]
+
+def test_modele_par_groupe_comparable() -> None:
+    """Les deux approches donnent une erreur proche (cas usuel)."""
+    jeu = JeuDeDonnees("donnees/Student_Performance.csv")
+    jeu.nettoyer()
+    X_train, X_test, y_train, y_test = jeu.separer()
+
+    unique = Modele()
+    unique.entrainer(X_train, y_train)
+    groupe = ModeleParGroupe()
+    groupe.entrainer(X_train, y_train)
+
+    mae_unique = unique.evaluer(X_test, y_test)["mae"]
+    mae_groupe = groupe.evaluer(X_test, y_test)["mae"]
+    assert len(groupe.predire(X_test)) == len(X_test)
+    assert mae_groupe == pytest.approx(mae_unique, abs=1.0)
