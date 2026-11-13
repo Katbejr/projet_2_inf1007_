@@ -1,6 +1,7 @@
 """Entraînement, évaluation, sauvegarde et prédiction du modèle."""
 import json
 import os
+import time
 
 import joblib
 import numpy as np
@@ -36,6 +37,7 @@ class Modele:
         self.y_train = y_train
         self._estimateur.fit(X_train, y_train)
         self._reference.fit(X_train, y_train)
+
     def evaluer(self, X_test, y_test) -> dict:
         """Note le modèle et la référence sur l'ensemble de test (aucun fit ici).
         
@@ -106,6 +108,7 @@ class Modele:
 
 class ModeleParGroupe:
     """Deux régressions : une par valeur d'« Extracurricular Activities »."""
+    COLONNE = "Extracurricular Activities"
 
     def __init__(self) -> None:
         self._modeles = {0: Modele(), 1: Modele()}   # composition
@@ -114,8 +117,27 @@ class ModeleParGroupe:
         # pour chaque groupe g (0 et 1) :
         #   masque = X_train[col] == g
         #   entraîner self._modeles[g] sur X_train[masque] (sans la colonne) et y_train[masque]
-        ...
+        for groupe, modele in self._modeles.items():
+            masque = X_train[self.COLONNE] == groupe
+            modele.entrainer(X_train[masque].drop(columns=[self.COLONNE]), y_train[masque])
 
-    def predire(self, X):
+    def predire(self, X) -> np.ndarray:
         # pour chaque ligne, utiliser le modèle de son groupe
-        ...
+        predictions = np.empty(len(X))
+        for groupe, modele in self._modeles.items():
+            masque = (X(self.COLONNE) == groupe).to_numpy()
+            if masque.any():
+                predictions[masque] = modele.predire(X[masque]).drop(columns = [self.COLONNE])
+
+        return predictions
+
+
+    def evaluer(self, X_test, Y_test) -> dict:
+        predictions = self.predire(X_test)
+        return {
+            "mae" : mae_numpy(Y_test, predictions),
+            "r2" : float(r2_score(Y_test, predictions)) 
+        }
+    
+    def __repr__(self) -> str:
+        return "ModeleParGroupe(2 x )"
