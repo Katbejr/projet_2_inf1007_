@@ -33,9 +33,9 @@ class Application:
         self._cadre_graphique.grid(row=0, column=1)
 
         self._resultat = tk.StringVar(value="Remplissez le formulaire puis cliquez sur Predire.")
-        #self.construire_formulaire() #activer plus tard
+        self.construire_formulaire() 
         #self._creer_graphique() #activer plus tard
-        ttk.Label(self._cadre_formulaire, textvariable=self._resultat).grid(row=0, column=0)
+        
 
     def lancer(self) -> None:
         """Ouvre la fenêtre et attend les actions de l'utilisateur."""
@@ -43,7 +43,21 @@ class Application:
 
     def construire_formulaire(self) -> None:
         """Un champ par variable : champ texte (numérique) ou liste déroulante (catégorielle)."""
-        raise NotImplementedError
+        for numero, variable in enumerate(self._variables):
+            ttk.Label(self._cadre_formulaire, text=variable.nom).grid(
+                row=numero, column=0, sticky="w", pady=4)
+            if isinstance(variable, VariableCategorielle):
+                champ = ttk.Combobox(self._cadre_formulaire,
+                                     values=variable.valeurs, state="readonly")
+                champ.current(0)
+            else:
+                champ = ttk.Entry(self._cadre_formulaire)
+            champ.grid(row=numero, column=1, padx=8, pady=4)
+            self._champs[variable.nom] = champ
+
+        ttk.Label(self._cadre_formulaire, textvariable=self._resultat,
+                  wraplength=300).grid(
+            row=len(self._variables) + 1, column=0, columnspan=2, pady=10)
     
 
     def predire(self) -> None:
