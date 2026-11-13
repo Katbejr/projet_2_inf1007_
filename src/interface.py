@@ -33,8 +33,9 @@ class Application:
         self._cadre_graphique.grid(row=0, column=1)
 
         self._resultat = tk.StringVar(value="Remplissez le formulaire puis cliquez sur Predire.")
-        self.construire_formulaire()
-        self._creer_graphique()
+        #self.construire_formulaire() #activer plus tard
+        #self._creer_graphique() #activer plus tard
+        ttk.Label(self._cadre_formulaire, textvariable=self._resultat).grid(row=0, column=0)
 
     def lancer(self) -> None:
         """Ouvre la fenêtre et attend les actions de l'utilisateur."""

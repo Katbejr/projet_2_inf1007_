@@ -8,6 +8,8 @@ CHEMIN_HISTORIQUE = "historique.csv"
 
 def main() -> None:
     """Lance l'application (l'interface sera branchée plus tard)."""
+    app=Application(None, [], CHEMIN_HISTORIQUE)
+    app.lancer()
     print("Projet 2 INF1007 : application en construction.")
 
 
