@@ -51,7 +51,7 @@ class JeuDeDonnees:
         Sans effet si la colonne est déjà encodée.
         """
         col = CATEGORIELLES[0]
-        if self._df[col].dtype != object: # check si contient du texte sinon return et laisse t.q.
+        if pd.api.types.is_numeric_dtype(self._df[col]):  # deja des nombres : rien a faire 
             return
         self._df[col] = self._df[col].map({"Yes": 1, "No": 0}) #transforme les Yes and No en 1 0, mais si valeur innatendu => NaN (.replace serait aussi ideal)
 

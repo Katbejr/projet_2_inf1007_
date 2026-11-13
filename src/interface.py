@@ -2,6 +2,7 @@
 
 Technologie à faire approuver (validation D) avant de coder : Tkinter, Streamlit, etc.
 """
+import pandas as pd
 import tkinter as tk
 from tkinter import messagebox, ttk
 
@@ -76,7 +77,13 @@ class Application:
         except DonneeInvalideError as erreur:
             messagebox.showerror("Saisie invalide", str(erreur))
             return
-        self._resultat.set(f"Saisies valides : {valeurs}")
+        ligne = dict(valeurs)
+        for nom, valeur in valeurs.items():
+            if valeur in ENCODAGE:
+                ligne[nom] = ENCODAGE[valeur]
+        X = pd.DataFrame([ligne])
+        indice = self._modele.predire(X)[0]
+        self._resultat.set(f"Indice de performance estimé : {indice:.0f} sur 100")
         
 
     def creer_graphique(self) -> None:

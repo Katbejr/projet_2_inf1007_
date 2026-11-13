@@ -15,7 +15,12 @@ def main() -> None:
         VariableNumerique("Sleep Hours", 4, 9),
         VariableNumerique("Sample Question Papers Practiced", 0, 9),
     ]
-    app=Application(None, variables, CHEMIN_HISTORIQUE)
+    jeu = JeuDeDonnees(CHEMIN_DONNEES)
+    jeu.nettoyer()
+    X_train, X_test, y_train, y_test = jeu.separer()
+    modele = Modele()
+    modele.entrainer(X_train, y_train)
+    app=Application(modele, variables, CHEMIN_HISTORIQUE)
     app.lancer()
     print("Projet 2 INF1007 : application en construction.")
 
