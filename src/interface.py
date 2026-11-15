@@ -63,6 +63,9 @@ class Application:
         ttk.Button(self._cadre_formulaire, text="Prédire",
                    command=self.predire).grid(
             row=len(self._variables), column=0, columnspan=2, pady=10)
+        ttk.Button(self._cadre_formulaire, text="Voir l'historique",
+                   command=self.afficher_historique).grid(
+            row=len(self._variables) + 2, column=0, columnspan=2, pady=5)
     
 
     def predire(self) -> None:
@@ -84,6 +87,8 @@ class Application:
         X = pd.DataFrame([ligne])
         indice = self._modele.predire(X)[0]
         self._resultat.set(f"Indice de performance estimé : {indice:.0f} sur 100")
+        ligne["Indice estimé"] = round(float(indice), 1)
+        ajouter_historique(self._chemin_historique, ligne)
         
 
     def creer_graphique(self) -> None:
@@ -100,4 +105,12 @@ class Application:
         """Montre les prédictions passées (lire_historique)."""
 
 
-        raise NotImplementedError
+        fenetre = tk.Toplevel(self._fenetre)
+        fenetre.title("Historique des prédictions")
+        lignes = lire_historique(self._chemin_historique)
+        if not lignes:
+            ttk.Label(fenetre, text="Aucune prédiction pour l'instant.").pack(padx=20, pady=20)
+            return
+        for ligne in lignes:
+            texte = ", ".join(f"{cle} : {valeur}" for cle, valeur in ligne.items())
+            ttk.Label(fenetre, text=texte).pack(anchor="w", padx=10, pady=2)
