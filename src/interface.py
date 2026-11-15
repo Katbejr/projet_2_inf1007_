@@ -35,7 +35,7 @@ class Application:
 
         self._resultat = tk.StringVar(value="Remplissez le formulaire puis cliquez sur Predire.")
         self.construire_formulaire() 
-        #self._creer_graphique() #activer plus tard
+        self.creer_graphique() #activer plus tard
         
 
     def lancer(self) -> None:
@@ -87,19 +87,36 @@ class Application:
         X = pd.DataFrame([ligne])
         indice = self._modele.predire(X)[0]
         self._resultat.set(f"Indice de performance estimé : {indice:.0f} sur 100")
+        self.afficher_graphique(ligne, indice)
         ligne["Indice estimé"] = round(float(indice), 1)
         ajouter_historique(self._chemin_historique, ligne)
         
 
     def creer_graphique(self) -> None:
-        
-        raise NotImplementedError
+        self._figure = Figure(figsize=(5, 3.8))
+        self._axes = self._figure.add_subplot(111)
+        self._canevas = FigureCanvasTkAgg(self._figure, master=self._cadre_graphique)
+        self._canevas.get_tk_widget().pack()
+        self._axes.set_title("Le graphique apparaîtra après une prédiction", fontsize=11)
+        self._canevas.draw()
 
-    def afficher_graphique(self) -> None:
+    def afficher_graphique(self, ligne: dict, indice: float) -> None:
         """Graphique Matplotlib intégré (titre, axes, légende)."""
+        heures = list(range(1, 10))
+        X = pd.DataFrame([ligne] * len(heures))
+        X[VARIABLE_GRAPHIQUE] = heures
+        predictions = self._modele.predire(X)
 
-
-        raise NotImplementedError
+        self._axes.clear()
+        self._axes.plot(heures, predictions, marker="o", label="Prédiction du modèle")
+        self._axes.scatter([ligne[VARIABLE_GRAPHIQUE]], [indice],
+                           color="red", zorder=3, label="Votre cas")
+        self._axes.set_title("Effet des heures d'étude sur l'indice", fontsize=11)
+        self._axes.set_xlabel("Heures d'étude par jour")
+        self._axes.set_ylabel("Indice de performance estimé")
+        self._axes.legend()
+        self._figure.tight_layout()
+        self._canevas.draw()
 
     def afficher_historique(self) -> None:
         """Montre les prédictions passées (lire_historique)."""
