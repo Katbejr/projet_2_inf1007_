@@ -1,0 +1,6 @@
+[run]
+source = src
+# L interface et le point d entree ne sont pas testes (enonce : tests hors interface)
+omit =
+    src/interface.py
+    src/main.py

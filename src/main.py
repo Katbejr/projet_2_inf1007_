@@ -1,28 +1,27 @@
-"""Point d'entrée de l'application."""
-from donnees import CATEGORIELLES, JeuDeDonnees, VariableCategorielle, VariableNumerique
+"""Point d'entrée de l'application : charge le modèle sauvegardé, puis ouvre l'interface.
+
+Le modèle n'est pas ré-entraîné ici : lancer d'abord `python src/entrainement.py`.
+"""
+import sys
+
+from donnees import CHEMIN_HISTORIQUE, DOSSIER_MODELES, variables_depuis_metadonnees
+from exceptions import DonneeInvalideError, ModeleIntrouvableError
 from interface import Application
 from modele import Modele
 
-CHEMIN_DONNEES = "donnees/Student_Performance.csv"
-CHEMIN_HISTORIQUE = "historique.csv"
 
 def main() -> None:
-    """Lance l'application (l'interface sera branchée plus tard)."""
-    variables = [
-        VariableNumerique("Hours Studied", 1, 9),
-        VariableNumerique("Previous Scores", 40, 99),
-        VariableCategorielle("Extracurricular Activities", ["Yes", "No"]),
-        VariableNumerique("Sleep Hours", 4, 9),
-        VariableNumerique("Sample Question Papers Practiced", 0, 9),
-    ]
-    jeu = JeuDeDonnees(CHEMIN_DONNEES)
-    jeu.nettoyer()
-    X_train, X_test, y_train, y_test = jeu.separer()
-    modele = Modele()
-    modele.entrainer(X_train, y_train)
-    app=Application(modele, variables, CHEMIN_HISTORIQUE)
-    app.lancer()
-    print("Projet 2 INF1007 : application en construction.")
+    """Charge le modèle et ses métadonnées, construit les variables et lance l'interface."""
+    try:
+        modele = Modele.charger(DOSSIER_MODELES)
+        variables = variables_depuis_metadonnees(modele.metadonnees)
+    except ModeleIntrouvableError as erreur:
+        print(f"{erreur}\nLancez d'abord : python src/entrainement.py")
+        sys.exit(1)
+    except (DonneeInvalideError, KeyError) as erreur:
+        print(f"Métadonnées invalides ({erreur}). Relancez : python src/entrainement.py")
+        sys.exit(1)
+    Application(modele, variables, CHEMIN_HISTORIQUE).lancer()
 
 
 if __name__ == "__main__":

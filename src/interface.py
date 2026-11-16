@@ -13,7 +13,6 @@ from modele import Modele
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-ENCODAGE = {"Yes": 1, "No": 0}        
 VARIABLE_GRAPHIQUE = "Hours Studied"  
 
 class Application:
@@ -81,9 +80,10 @@ class Application:
             messagebox.showerror("Saisie invalide", str(erreur))
             return
         ligne = dict(valeurs)
+        encodage = self._modele.metadonnees.get("encodage", {})  # ex. Yes -> 1, No -> 0
         for nom, valeur in valeurs.items():
-            if valeur in ENCODAGE:
-                ligne[nom] = ENCODAGE[valeur]
+            if nom in encodage:
+                ligne[nom] = encodage[nom][valeur]
         X = pd.DataFrame([ligne])
         indice = self._modele.predire(X)[0]
         self._resultat.set(f"Indice de performance estimé : {indice:.0f} sur 100")

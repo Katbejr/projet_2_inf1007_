@@ -13,23 +13,23 @@
 
 ## Volet 2 — modèle (`src/modele.py`)
 - [ ] Validation C : cible, métrique, modèle
-- [ ] `separer` (graine fixée), référence `DummyRegressor`
-- [ ] `Modele.entrainer`, `evaluer`, `predire`, `sauvegarder`, `charger`
-- [ ] `mae_numpy` (vectorisé) + test comparé à scikit-learn
-- [ ] Décorateur `chronometre`
-- [ ] Graphique « prédit contre réel » + limites (données probablement synthétiques)
+- [x] `separer` (graine fixée), référence `DummyRegressor`
+- [x] `Modele.entrainer`, `evaluer`, `predire`, `sauvegarder`, `charger`
+- [x] `mae_numpy` (vectorisé) + test comparé à scikit-learn
+- [x] Décorateur `chronometre`
+- [x] Graphique « prédit contre réel » + limites (données probablement synthétiques)
 
 ## Volet 3 — interface (`src/interface.py`)
 - [ ] Validation D : technologie + maquette papier
-- [ ] `VariableNumerique.valider`, `VariableCategorielle.valider`
-- [ ] Formulaire construit à partir des métadonnées JSON
-- [ ] Bouton Prédire + messages clairs (aucun traceback)
-- [ ] Graphique Matplotlib intégré
-- [ ] Historique CSV consultable
+- [x] `VariableNumerique.valider`, `VariableCategorielle.valider`
+- [x] Formulaire construit à partir des métadonnées JSON
+- [x] Bouton Prédire + messages clairs (aucun traceback)
+- [x] Graphique Matplotlib intégré
+- [x] Historique CSV consultable
 
 ## Qualité
 - [ ] Docstrings + annotations partout
-- [ ] ≥ 8 tests (usuel, limite, erreur), `pytest.approx`
-- [ ] Couverture notée dans le README
+- [x] ≥ 8 tests (usuel, limite, erreur), `pytest.approx`
+- [x] Couverture notée dans le README
 - [ ] DECISIONS.md et JOURNAL_IA.md (≥ 5 entrées, dont une vérification qui change une décision)
 - [ ] Cloner dans un dossier neuf : installation, lancement, CI verte

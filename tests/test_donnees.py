@@ -7,6 +7,7 @@ from donnees import (
     VariableNumerique,
     ajouter_historique,
     lire_historique,
+    variables_depuis_metadonnees,
 )
 from exceptions import DonneeInvalideError
 
@@ -92,3 +93,24 @@ def test_historique_ajoute_puis_relit(tmp_path) -> None:
     lignes = lire_historique(chemin)
     assert len(lignes) == 2
     assert lignes[0]["prediction"] == "72.5"
+
+
+def test_variables_depuis_metadonnees() -> None:
+    """Une Variable du bon type par colonne, dans l'ordre (cas usuel)."""
+    meta = {
+        "colonnes": ["Sleep Hours", "Extracurricular Activities"],
+        "numeriques": {"Sleep Hours": [4.0, 9.0]},
+        "categorielles": {"Extracurricular Activities": ["No", "Yes"]},
+    }
+    variables = variables_depuis_metadonnees(meta)
+    assert isinstance(variables[0], VariableNumerique)
+    assert variables[0].maximum == pytest.approx(9.0)
+    assert isinstance(variables[1], VariableCategorielle)
+    assert variables[1].valeurs == ["No", "Yes"]
+
+
+def test_variables_colonne_non_decrite_leve_erreur() -> None:
+    """Colonne absente des métadonnées : DonneeInvalideError (cas d'erreur)."""
+    meta = {"colonnes": ["Inconnue"], "numeriques": {}, "categorielles": {}}
+    with pytest.raises(DonneeInvalideError):
+        variables_depuis_metadonnees(meta)

@@ -12,36 +12,67 @@ Application qui estime l'indice de performance d'un étudiant (10 à 100) à par
 - Fichier : `donnees/Student_Performance.csv`
 
 ## Installation et lancement
+Depuis la racine du dépôt :
 ```bash
 pip install -r requirements.txt
+```
+```bash
+python src/entrainement.py
+```
+```bash
 python src/main.py
 ```
+`entrainement.py` s'exécute **une seule fois** : il produit les graphiques dans `figures/`, puis enregistre le modèle (`modeles/modele.joblib`) et ses métadonnées (`modeles/metadonnees.json` : colonnes, intervalles des variables numériques, valeurs des catégories, encodage, métriques). `main.py` recharge ce modèle sans le ré-entraîner et construit le formulaire à partir des métadonnées.
+
+L'interface utilise Tkinter, inclus avec Python. Sous Linux, il peut falloir l'installer à part (`sudo apt install python3-tk`).
 
 ## Tests et couverture
 ```bash
 pytest -v
 coverage run -m pytest && coverage report
 ```
-Couverture : _à compléter_
+Couverture (logique dans `src/`, hors `interface.py` et `main.py`, voir `.coveragerc`) : **96 %**, avec 26 tests.
+
+| Module | Couverture |
+|---|---|
+| `donnees.py` | 97 % |
+| `modele.py` | 97 % |
+| `graphiques.py` | 98 % |
+| `entrainement.py` | 85 % (le bloc `if __name__ == "__main__"` n'est pas testé) |
+| `exceptions.py` | 100 % |
 
 ## Structure du code
 | Fichier | Rôle |
 |---|---|
-| `src/donnees.py` | Lecture, nettoyage, classes de variables, historique |
-| `src/modele.py` | Entraînement, évaluation, sauvegarde, prédiction |
+| `src/donnees.py` | Chemins, lecture, nettoyage, classes de variables, métadonnées, historique |
+| `src/modele.py` | Entraînement (chronométré), évaluation, sauvegarde, chargement, prédiction |
+| `src/graphiques.py` | Graphiques d'exploration et « prédit contre réel » (`savefig`) |
+| `src/entrainement.py` | Script à lancer une fois : entraîne, évalue et sauvegarde le modèle |
 | `src/exceptions.py` | Exceptions personnalisées |
 | `src/interface.py` | Interface graphique |
 | `src/main.py` | Point d'entrée |
 | `donnees/` | Jeu de données (CSV) |
-| `modeles/` | Modèle sauvegardé + métadonnées JSON |
+| `modeles/` | Modèle sauvegardé + métadonnées JSON (générés, non versionnés) |
+| `figures/` | `exploration.png` et `predit_contre_reel.png` |
 
 ## Résultats du modèle
-_Métrique et comparaison avec la référence : à compléter._
+Régression linéaire multiple, évaluée sur l'ensemble de test (30 %, soit 3 000 lignes, `random_state=42`) :
+
+| Modèle | MAE (points d'indice) | R² |
+|---|---|---|
+| Référence (`DummyRegressor`, moyenne) | 16,24 | -0,001 |
+| Régression linéaire | **1,61** | **0,989** |
+
+Le modèle se trompe en moyenne de 1,6 point sur 100, soit 10 fois moins que la référence (voir `figures/predit_contre_reel.png`).
+
+**Limites :** un R² aussi élevé suggère que le jeu est synthétique, généré à partir d'une formule presque linéaire. Le modèle ne vaut donc que pour des données semblables, et pas pour de vrais étudiants. Les saisies sont limitées aux intervalles observés : hors de ces intervalles, le modèle extrapolerait. Enfin, 127 doublons sont conservés (voir DECISIONS.md).
 
 ## Outil du chapitre 7
-_À compléter (ex. : le décorateur `chronometre` mesure la durée de l'entraînement)._
+- **Décorateur** `chronometre` (`src/modele.py`) : il enveloppe `Modele.entrainer` pour mesurer la durée de l'entraînement sans modifier la méthode. La durée est enregistrée dans les métadonnées (`duree_entrainement_s`).
+- **Lambda** comme clé de tri dans `decrire_variables` (`src/donnees.py`) : `sorted(..., key=lambda v: v.lower())` ordonne les valeurs des catégories sans tenir compte de la casse.
 
 ## Documentation consultée
-- _pandas : à compléter_
-- _scikit-learn : à compléter_
-- _interface graphique : à compléter_
+- pandas : [`read_csv`](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html), [`Series.map`](https://pandas.pydata.org/docs/reference/api/pandas.Series.map.html), [`DataFrame.duplicated`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.duplicated.html)
+- scikit-learn : [`train_test_split`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html), [`LinearRegression`](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html), [`DummyRegressor`](https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyRegressor.html), [persistance des modèles (joblib)](https://scikit-learn.org/stable/model_persistence.html)
+- Tkinter : [`tkinter`](https://docs.python.org/3/library/tkinter.html), [`tkinter.ttk`](https://docs.python.org/3/library/tkinter.ttk.html)
+- Matplotlib : [Embedding in Tk](https://matplotlib.org/stable/gallery/user_interfaces/embedding_in_tk_sgskip.html), [`Figure.savefig`](https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.savefig.html)
