@@ -31,6 +31,10 @@ class JeuDeDonnees:
     """Charge le CSV et prépare les données pour le modèle."""
 
     def __init__(self, chemin: str) -> None:
+        """Lit le CSV `chemin` avec pandas.
+
+        Échoue : FileNotFoundError si le fichier n'existe pas.
+        """
         if not os.path.exists(chemin):
             raise FileNotFoundError(f"Fichier introuvable : {chemin}")
         self._chemin = chemin
@@ -93,6 +97,7 @@ class Variable(ABC):
     """Classe parente abstraite : une caractéristique d'entrée du modèle."""
 
     def __init__(self, nom: str) -> None:
+        """Reçoit le nom de la colonne (protégé : lecture par la propriété `nom`)."""
         self._nom = nom
 
     @property
@@ -101,7 +106,7 @@ class Variable(ABC):
         return self._nom
 
     @abstractmethod
-    def valider(self, saisie: str):
+    def valider(self, saisie: str) -> float | str:
         """Convertit et valide une saisie texte.
 
         Reçoit : la saisie brute (str) venant de l'interface.
@@ -110,6 +115,7 @@ class Variable(ABC):
         """
 
     def __repr__(self) -> str:
+        """Représentation lisible, par exemple VariableNumerique('Sleep Hours')."""
         return f"{type(self).__name__}({self._nom!r})"
 
 
@@ -117,41 +123,46 @@ class VariableNumerique(Variable):
     """Variable numérique bornée par un intervalle [minimum, maximum]."""
 
     def __init__(self, nom: str, minimum: float, maximum: float) -> None:
+        """Reçoit le nom de la colonne et l'intervalle permis [minimum, maximum]."""
         super().__init__(nom)
         self._minimum = minimum
         self._maximum = maximum
 
     @property
     def minimum(self) -> float:
+        """Plus petite valeur acceptée (lecture seule)."""
         return self._minimum
 
     @property
     def maximum(self) -> float:
-        return self._maximum    
+        """Plus grande valeur acceptée (lecture seule)."""
+        return self._maximum
 
     def valider(self, saisie: str) -> float:
         """Convertit la saisie en nombre et vérifie qu'elle est dans [minimum, maximum].
 
+        La virgule décimale est acceptée (« 7,5 » devient 7.5).
         Échoue : DonneeInvalideError si vide, non numérique ou hors intervalle.
         """
         if not saisie.strip():
             raise DonneeInvalideError(f"{self.nom} : la saisie est vide.")
         try:
-            valeur = float(saisie)
+            valeur = float(saisie.strip().replace(",", "."))
         except ValueError:
-            raise DonneeInvalideError(f"{self.nom} : « {saisie} » n'est pas un nombre.")
+            raise DonneeInvalideError(
+                f"{self.nom} : « {saisie} » n'est pas un nombre (exemple : 7 ou 7,5).")
         if not self._minimum <= valeur <= self._maximum:
             raise DonneeInvalideError(
                 f"{self.nom} : doit être entre {self._minimum} et {self._maximum}."
             )
         return valeur
-            
 
 
 class VariableCategorielle(Variable):
     """Variable catégorielle : la saisie doit faire partie des valeurs permises."""
 
     def __init__(self, nom: str, valeurs: list[str]) -> None:
+        """Reçoit le nom de la colonne et la liste des valeurs permises."""
         super().__init__(nom)
         self._valeurs = list(valeurs)
 
