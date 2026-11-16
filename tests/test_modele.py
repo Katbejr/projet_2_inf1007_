@@ -20,7 +20,7 @@ from sklearn.metrics import mean_absolute_error
 from donnees import JeuDeDonnees
 from entrainement import entrainer_et_sauvegarder
 from exceptions import ModeleIntrouvableError
-from modele import Modele, ModeleParGroupe, chronometre, mae_numpy
+from modele import Modele, ModeleParGroupe, chronometre, formuler_resultat, mae_numpy
 
 
 CHEMIN = "donnees/Student_Performance.csv"
@@ -111,3 +111,15 @@ def test_entrainer_et_sauvegarder_cree_les_fichiers(tmp_path) -> None:
     meta = Modele.charger(str(dossier_modeles)).metadonnees
     assert meta["numeriques"]["Hours Studied"] == [1.0, 9.0]
     assert meta["categorielles"]["Extracurricular Activities"] == ["No", "Yes"]
+
+
+def test_formuler_resultat_avec_marge() -> None:
+    """Phrase lisible avec la MAE comme indice de confiance (cas usuel)."""
+    phrase = formuler_resultat(72.4, 1.609)
+    assert "72 sur 100" in phrase
+    assert "± 1,6 point" in phrase
+
+
+def test_formuler_resultat_borne_a_100() -> None:
+    """Une prédiction au-delà de 100 est ramenée à 100, sans marge (cas limite)."""
+    assert formuler_resultat(103.2) == "Indice de performance estimé : 100 sur 100"

@@ -56,6 +56,12 @@ def test_numerique_valide() -> None:
     assert v.valider("7") == pytest.approx(7.0)
 
 
+def test_numerique_virgule_decimale() -> None:
+    """« 7,5 » est accepté comme 7.5 (cas usuel au Québec)."""
+    v = VariableNumerique("Sleep Hours", 4, 9)
+    assert v.valider(" 7,5 ") == pytest.approx(7.5)
+
+
 def test_numerique_borne_exacte() -> None:
     """Borne maximale acceptée (cas limite)."""
     v = VariableNumerique("Sleep Hours", 4, 9)

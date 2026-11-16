@@ -3,10 +3,11 @@ import functools
 import json
 import os
 import time
-from typing import Callable
+from typing import Any, Callable
 
 import joblib
 import numpy as np
+import pandas as pd
 from sklearn.dummy import DummyRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
@@ -22,7 +23,8 @@ def chronometre(fonction: Callable) -> Callable:
     du dernier appel (en secondes) est conservée dans `enveloppe.derniere_duree`.
     """
     @functools.wraps(fonction)
-    def enveloppe(*args, **kwargs):
+    def enveloppe(*args: Any, **kwargs: Any) -> Any:
+        """Appelle `fonction`, mémorise sa durée et renvoie son résultat."""
         debut = time.perf_counter()
         resultat = fonction(*args, **kwargs)
         enveloppe.derniere_duree = time.perf_counter() - debut
@@ -37,8 +39,23 @@ def mae_numpy(y_vrai: np.ndarray, y_predit: np.ndarray) -> float:
 
     Un test vérifiera qu'elle égale sklearn.metrics.mean_absolute_error.
     """
-    # TODO (toi) : une seule ligne avec np.abs et np.mean
     return float(np.mean(np.abs(np.asarray(y_vrai) - np.asarray(y_predit))))
+
+def formuler_resultat(indice: float, mae: float | None = None) -> str:
+    """Phrase lisible par un non-informaticien pour une prédiction.
+
+    Reçoit : l'indice prédit et, si connue, l'erreur moyenne (MAE) du modèle,
+    utilisée comme indice de confiance.
+    Renvoie : par exemple « Indice de performance estimé : 72 sur 100
+    (marge d'erreur moyenne du modèle : ± 1,6 point) ».
+    """
+    indice = min(max(indice, 0.0), 100.0)  # l'indice est défini sur [0, 100]
+    phrase = f"Indice de performance estimé : {indice:.0f} sur 100"
+    if mae is not None:
+        marge = f"{mae:.1f}".replace(".", ",")
+        phrase += f"\n(marge d'erreur moyenne du modèle : ± {marge} point)"
+    return phrase
+
 
 class Modele:
     """Enveloppe le modèle scikit-learn, sa référence et ses métadonnées."""
@@ -46,13 +63,18 @@ class Modele:
     FICHIER_MODELE = "modele.joblib"
     FICHIER_META = "metadonnees.json"
 
-    def __init__(self, estimateur=None) -> None:
+    def __init__(self, estimateur: Any = None) -> None:
+        """Reçoit un estimateur scikit-learn (LinearRegression par défaut).
+
+        La référence (DummyRegressor, moyenne) est créée ici ; les métadonnées
+        sont remplies par sauvegarder() ou charger().
+        """
         self._estimateur = estimateur if estimateur is not None else LinearRegression()
         self._reference = DummyRegressor(strategy="mean")
         self._metadonnees: dict = {}
 
     @chronometre
-    def entrainer(self, X_train, y_train) -> None:
+    def entrainer(self, X_train: pd.DataFrame, y_train: pd.Series) -> None:
         """Entraîne le modèle ET la référence sur l'ensemble d'entraînement.
 
         Chronométré : la durée est lisible dans Modele.entrainer.derniere_duree.
@@ -60,12 +82,11 @@ class Modele:
         self._estimateur.fit(X_train, y_train)
         self._reference.fit(X_train, y_train)
 
-    def evaluer(self, X_test, y_test) -> dict:
+    def evaluer(self, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
         """Note le modèle et la référence sur l'ensemble de test (aucun fit ici).
         
                 Renvoie {"mae": ..., "r2": ..., "mae_reference": ..., "r2_reference": ...}.
                 """
-        # TODO (toi) : reprendre la logique de regression_lineaire.py
         pred_modele = self._estimateur.predict(X_test)
         pred_reference = self._reference.predict(X_test)
         return {
@@ -76,7 +97,7 @@ class Modele:
         }
 
 
-    def predire(self, X) -> np.ndarray:
+    def predire(self, X: pd.DataFrame) -> np.ndarray:
         """Renvoie les indices de performance prédits pour les lignes de X."""
         return self._estimateur.predict(X)
 
@@ -86,7 +107,6 @@ class Modele:
         Métadonnées attendues : colonnes, valeurs des catégories,
         intervalles des numériques, métrique obtenue.
         """
-        # TODO (toi) : os.path.join ; joblib.dump ; with open(..., "w", encoding="utf-8") + json.dump
         os.makedirs(dossier, exist_ok=True)
         chemin_modele = os.path.join(dossier, self.FICHIER_MODELE)
         chemin_meta = os.path.join(dossier, self.FICHIER_META)
@@ -122,9 +142,11 @@ class Modele:
 
     @property
     def metadonnees(self) -> dict:
+        """Copie des métadonnées (vide tant que le modèle n'est ni sauvegardé ni chargé)."""
         return dict(self._metadonnees)
 
     def __repr__(self) -> str:
+        """Représentation lisible, par exemple Modele(LinearRegression)."""
         return f"Modele({type(self._estimateur).__name__})"
 
 
@@ -133,33 +155,39 @@ class ModeleParGroupe:
     COLONNE = "Extracurricular Activities"
 
     def __init__(self) -> None:
-        self._modeles = {0: Modele(), 1: Modele()}   # composition
+        """Crée un Modele par groupe (0 = sans activité, 1 = avec) : composition."""
+        self._modeles = {0: Modele(), 1: Modele()}
 
-    def entrainer(self, X_train, y_train) -> None:
-        # pour chaque groupe g (0 et 1) :
-        #   masque = X_train[col] == g
-        #   entraîner self._modeles[g] sur X_train[masque] (sans la colonne) et y_train[masque]
+    def entrainer(self, X_train: pd.DataFrame, y_train: pd.Series) -> None:
+        """Entraîne chaque Modele sur les lignes de son groupe, sans la colonne de groupe.
+
+        Échoue : KeyError si la colonne de groupe est absente de X_train.
+        """
         for groupe, modele in self._modeles.items():
             masque = X_train[self.COLONNE] == groupe
             modele.entrainer(X_train[masque].drop(columns=[self.COLONNE]), y_train[masque])
 
-    def predire(self, X) -> np.ndarray:
-        # pour chaque ligne, utiliser le modèle de son groupe
+    def predire(self, X: pd.DataFrame) -> np.ndarray:
+        """Prédit chaque ligne avec le Modele de son groupe.
+
+        Renvoie : un tableau NumPy de même longueur que X.
+        Échoue : KeyError si la colonne de groupe est absente de X.
+        """
         predictions = np.empty(len(X))
         for groupe, modele in self._modeles.items():
             masque = (X[self.COLONNE] == groupe).to_numpy()
             if masque.any():
                 predictions[masque] = modele.predire(X[masque].drop(columns=[self.COLONNE]))
-
         return predictions
 
-
-    def evaluer(self, X_test, Y_test) -> dict:
+    def evaluer(self, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
+        """Renvoie {"mae": ..., "r2": ...} sur l'ensemble de test (aucun fit ici)."""
         predictions = self.predire(X_test)
         return {
-            "mae" : mae_numpy(Y_test, predictions),
-            "r2" : float(r2_score(Y_test, predictions)) 
+            "mae": mae_numpy(y_test, predictions),
+            "r2": float(r2_score(y_test, predictions)),
         }
-    
+
     def __repr__(self) -> str:
-        return "ModeleParGroupe(2 x )"
+        """Représentation lisible du modèle composé."""
+        return "ModeleParGroupe(2 x Modele(LinearRegression))"

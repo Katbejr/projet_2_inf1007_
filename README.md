@@ -31,7 +31,7 @@ L'interface utilise Tkinter, inclus avec Python. Sous Linux, il peut falloir l'i
 pytest -v
 coverage run -m pytest && coverage report
 ```
-Couverture (logique dans `src/`, hors `interface.py` et `main.py`, voir `.coveragerc`) : **96 %**, avec 26 tests.
+Couverture (logique dans `src/`, hors `interface.py` et `main.py`, voir `.coveragerc`) : **96 %**, avec 29 tests.
 
 | Module | Couverture |
 |---|---|

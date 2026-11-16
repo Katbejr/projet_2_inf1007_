@@ -31,5 +31,5 @@
 - [ ] Docstrings + annotations partout
 - [x] ≥ 8 tests (usuel, limite, erreur), `pytest.approx`
 - [x] Couverture notée dans le README
-- [ ] DECISIONS.md et JOURNAL_IA.md (≥ 5 entrées, dont une vérification qui change une décision)
+- [x] DECISIONS.md et JOURNAL_IA.md (≥ 5 entrées, dont une vérification qui change une décision)
 - [ ] Cloner dans un dossier neuf : installation, lancement, CI verte

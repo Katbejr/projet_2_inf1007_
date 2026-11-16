@@ -1,7 +1,10 @@
-"""Interface graphique : appelle la logique du projet, ne la contient pas.
+"""Interface graphique Tkinter : appelle la logique du projet, ne la contient pas.
 
-Technologie à faire approuver (validation D) avant de coder : Tkinter, Streamlit, etc.
+Le formulaire est construit à partir des Variable recréées depuis les métadonnées
+du modèle sauvegardé ; le graphique Matplotlib est intégré avec FigureCanvasTkAgg.
 """
+import csv
+
 import pandas as pd
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -9,7 +12,7 @@ from tkinter import messagebox, ttk
 from donnees import (Variable, VariableCategorielle, ajouter_historique,
                      lire_historique)
 from exceptions import DonneeInvalideError
-from modele import Modele
+from modele import Modele, formuler_resultat
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
@@ -19,6 +22,10 @@ class Application:
     """Fenêtre principale. Composition : contient le Modele et la liste des Variable."""
 
     def __init__(self, modele: Modele, variables: list[Variable], chemin_historique: str) -> None:
+        """Reçoit le modèle chargé, ses variables d'entrée et le chemin de l'historique CSV.
+
+        Crée la fenêtre, le formulaire et la zone du graphique (sans l'afficher : voir lancer()).
+        """
         self._modele = modele
         self._variables = variables
         self._chemin_historique = chemin_historique
@@ -32,10 +39,9 @@ class Application:
         self._cadre_graphique = ttk.Frame(self._fenetre, padding=10)
         self._cadre_graphique.grid(row=0, column=1)
 
-        self._resultat = tk.StringVar(value="Remplissez le formulaire puis cliquez sur Predire.")
-        self.construire_formulaire() 
-        self.creer_graphique() #activer plus tard
-        
+        self._resultat = tk.StringVar(value="Remplissez le formulaire puis cliquez sur Prédire.")
+        self.construire_formulaire()
+        self.creer_graphique()
 
     def lancer(self) -> None:
         """Ouvre la fenêtre et attend les actions de l'utilisateur."""
@@ -86,13 +92,18 @@ class Application:
                 ligne[nom] = encodage[nom][valeur]
         X = pd.DataFrame([ligne])
         indice = self._modele.predire(X)[0]
-        self._resultat.set(f"Indice de performance estimé : {indice:.0f} sur 100")
+        mae = self._modele.metadonnees.get("metriques", {}).get("mae")
+        self._resultat.set(formuler_resultat(float(indice), mae))
         self.afficher_graphique(ligne, indice)
         ligne["Indice estimé"] = round(float(indice), 1)
-        ajouter_historique(self._chemin_historique, ligne)
-        
+        try:
+            ajouter_historique(self._chemin_historique, ligne)
+        except OSError as erreur:
+            messagebox.showwarning(
+                "Historique", f"La prédiction n'a pas pu être enregistrée : {erreur}")
 
     def creer_graphique(self) -> None:
+        """Crée la figure Matplotlib vide et l'intègre dans la fenêtre Tkinter."""
         self._figure = Figure(figsize=(5, 3.8))
         self._axes = self._figure.add_subplot(111)
         self._canevas = FigureCanvasTkAgg(self._figure, master=self._cadre_graphique)
@@ -124,7 +135,11 @@ class Application:
 
         fenetre = tk.Toplevel(self._fenetre)
         fenetre.title("Historique des prédictions")
-        lignes = lire_historique(self._chemin_historique)
+        try:
+            lignes = lire_historique(self._chemin_historique)
+        except (OSError, csv.Error) as erreur:
+            ttk.Label(fenetre, text=f"Historique illisible : {erreur}").pack(padx=20, pady=20)
+            return
         if not lignes:
             ttk.Label(fenetre, text="Aucune prédiction pour l'instant.").pack(padx=20, pady=20)
             return
