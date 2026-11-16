@@ -18,7 +18,9 @@ from sklearn.exceptions import NotFittedError
 from sklearn.metrics import mean_absolute_error
 
 from donnees import JeuDeDonnees
-from modele import Modele, mae_numpy, ModeleParGroupe
+from entrainement import entrainer_et_sauvegarder
+from exceptions import ModeleIntrouvableError
+from modele import Modele, ModeleParGroupe, chronometre, mae_numpy
 
 
 CHEMIN = "donnees/Student_Performance.csv"
@@ -68,3 +70,44 @@ def test_modele_par_groupe_comparable() -> None:
     mae_groupe = groupe.evaluer(X_test, y_test)["mae"]
     assert len(groupe.predire(X_test)) == len(X_test)
     assert mae_groupe == pytest.approx(mae_unique, abs=1.0)
+
+def test_sauvegarder_puis_charger_memes_predictions(donnees_separees, tmp_path) -> None:
+    """Le modèle rechargé prédit exactement comme l'original (cas usuel)."""
+    X_train, X_test, y_train, _ = donnees_separees
+    original = Modele()
+    original.entrainer(X_train, y_train)
+    original.sauvegarder(str(tmp_path), {"colonnes": list(X_train.columns), "mae": 1.6})
+
+    recharge = Modele.charger(str(tmp_path))
+    assert recharge.predire(X_test) == pytest.approx(original.predire(X_test))
+    assert recharge.metadonnees["mae"] == pytest.approx(1.6)
+
+
+def test_charger_dossier_vide_leve_erreur(tmp_path) -> None:
+    """Aucun fichier sauvegardé : ModeleIntrouvableError (cas d'erreur)."""
+    with pytest.raises(ModeleIntrouvableError):
+        Modele.charger(str(tmp_path))
+
+
+def test_chronometre_renvoie_le_resultat_et_mesure() -> None:
+    """Le décorateur ne change pas le résultat et mémorise une durée (cas usuel)."""
+    @chronometre
+    def addition(a: int, b: int) -> int:
+        return a + b
+
+    assert addition(2, 3) == 5
+    assert addition.derniere_duree >= 0.0
+
+
+def test_entrainer_et_sauvegarder_cree_les_fichiers(tmp_path) -> None:
+    """Le script produit modèle, métadonnées et figures (cas usuel, de bout en bout)."""
+    dossier_modeles = tmp_path / "modeles"
+    dossier_figures = tmp_path / "figures"
+    metriques = entrainer_et_sauvegarder(CHEMIN, str(dossier_modeles), str(dossier_figures))
+
+    assert metriques["mae"] < metriques["mae_reference"]
+    assert (dossier_figures / "exploration.png").exists()
+    assert (dossier_figures / "predit_contre_reel.png").exists()
+    meta = Modele.charger(str(dossier_modeles)).metadonnees
+    assert meta["numeriques"]["Hours Studied"] == [1.0, 9.0]
+    assert meta["categorielles"]["Extracurricular Activities"] == ["No", "Yes"]

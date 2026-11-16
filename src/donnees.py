@@ -5,6 +5,13 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+# Chemins construits avec os (ch. 5), à partir de la racine du projet
+RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CHEMIN_DONNEES = os.path.join(RACINE, "donnees", "Student_Performance.csv")
+DOSSIER_MODELES = os.path.join(RACINE, "modeles")
+DOSSIER_FIGURES = os.path.join(RACINE, "figures")
+CHEMIN_HISTORIQUE = os.path.join(RACINE, "historique.csv")
+
 COLONNE_CIBLE = "Performance Index"
 NUMERIQUES = ["Hours Studied", "Previous Scores", "Sleep Hours",
               "Sample Question Papers Practiced"]
@@ -186,3 +193,42 @@ def lire_historique(chemin: str) -> list[dict]:
         return []
     with open(chemin, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
+
+
+# ---------------------------------------------------------------------------
+# Métadonnées du modèle : l'interface se construit à partir d'elles (§3.6)
+# ---------------------------------------------------------------------------
+def decrire_variables(df: pd.DataFrame) -> dict:
+    """Décrit les caractéristiques d'entrée à partir des données brutes.
+
+    Reçoit : le DataFrame AVANT encodage (les catégories en texte).
+    Renvoie : {"colonnes": [...], "numeriques": {nom: [min, max]},
+    "categorielles": {nom: [valeurs triées]}}.
+    Échoue : KeyError si une colonne attendue est absente.
+    """
+    colonnes = [c for c in df.columns if c != COLONNE_CIBLE]
+    numeriques = {nom: [float(df[nom].min()), float(df[nom].max())]
+                  for nom in NUMERIQUES}
+    categorielles = {nom: sorted(df[nom].astype(str).unique(), key=lambda v: v.lower())
+                     for nom in CATEGORIELLES}
+    return {"colonnes": colonnes, "numeriques": numeriques,
+            "categorielles": categorielles}
+
+
+def variables_depuis_metadonnees(metadonnees: dict) -> list[Variable]:
+    """Recrée la liste des Variable dans l'ordre des colonnes du modèle.
+
+    Reçoit : le dict lu dans metadonnees.json.
+    Renvoie : une VariableNumerique ou VariableCategorielle par colonne.
+    Échoue : DonneeInvalideError si une colonne n'est décrite nulle part.
+    """
+    variables: list[Variable] = []
+    for nom in metadonnees["colonnes"]:
+        if nom in metadonnees["numeriques"]:
+            minimum, maximum = metadonnees["numeriques"][nom]
+            variables.append(VariableNumerique(nom, minimum, maximum))
+        elif nom in metadonnees["categorielles"]:
+            variables.append(VariableCategorielle(nom, metadonnees["categorielles"][nom]))
+        else:
+            raise DonneeInvalideError(f"Colonne « {nom} » absente des métadonnées.")
+    return variables

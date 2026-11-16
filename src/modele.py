@@ -1,7 +1,9 @@
 """Entraînement, évaluation, sauvegarde et prédiction du modèle."""
+import functools
 import json
 import os
 import time
+from typing import Callable
 
 import joblib
 import numpy as np
@@ -10,6 +12,24 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
 from exceptions import ModeleIntrouvableError
+
+
+def chronometre(fonction: Callable) -> Callable:
+    """Décorateur (ch. 7) : mesure la durée d'exécution de `fonction`.
+
+    Reçoit : la fonction à chronométrer.
+    Renvoie : une fonction enveloppe qui renvoie le même résultat ; la durée
+    du dernier appel (en secondes) est conservée dans `enveloppe.derniere_duree`.
+    """
+    @functools.wraps(fonction)
+    def enveloppe(*args, **kwargs):
+        debut = time.perf_counter()
+        resultat = fonction(*args, **kwargs)
+        enveloppe.derniere_duree = time.perf_counter() - debut
+        return resultat
+
+    enveloppe.derniere_duree = 0.0
+    return enveloppe
 
 
 def mae_numpy(y_vrai: np.ndarray, y_predit: np.ndarray) -> float:
@@ -31,10 +51,12 @@ class Modele:
         self._reference = DummyRegressor(strategy="mean")
         self._metadonnees: dict = {}
 
+    @chronometre
     def entrainer(self, X_train, y_train) -> None:
-        """Entraîne le modèle ET la référence sur l'ensemble d'entraînement."""
-        self.X_train =X_train
-        self.y_train = y_train
+        """Entraîne le modèle ET la référence sur l'ensemble d'entraînement.
+
+        Chronométré : la durée est lisible dans Modele.entrainer.derniere_duree.
+        """
         self._estimateur.fit(X_train, y_train)
         self._reference.fit(X_train, y_train)
 

@@ -9,3 +9,8 @@ __pycache__/
 htmlcov/
 .venv/
 venv/
+
+# Fichiers générés (python src/entrainement.py)
+modeles/*
+!modeles/.gitkeep
+historique.csv
