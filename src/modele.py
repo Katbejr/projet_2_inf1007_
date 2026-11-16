@@ -95,7 +95,7 @@ class Modele:
             metadonnees = json.load(f)
 
         modele = cls(estimateur)
-        modele._estimateur = metadonnees
+        modele._metadonnees = metadonnees
         return modele
 
     @property
@@ -125,9 +125,9 @@ class ModeleParGroupe:
         # pour chaque ligne, utiliser le modèle de son groupe
         predictions = np.empty(len(X))
         for groupe, modele in self._modeles.items():
-            masque = (X(self.COLONNE) == groupe).to_numpy()
+            masque = (X[self.COLONNE] == groupe).to_numpy()
             if masque.any():
-                predictions[masque] = modele.predire(X[masque]).drop(columns = [self.COLONNE])
+                predictions[masque] = modele.predire(X[masque].drop(columns=[self.COLONNE]))
 
         return predictions
 

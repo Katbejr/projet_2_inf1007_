@@ -22,7 +22,6 @@ def main() -> None:
     modele.entrainer(X_train, y_train)
     app=Application(modele, variables, CHEMIN_HISTORIQUE)
     app.lancer()
-    print("Projet 2 INF1007 : application en construction.")
 
 
 if __name__ == "__main__":
