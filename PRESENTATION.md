@@ -61,6 +61,8 @@ Temps de parole : Joud 1 min 45 · Alex 1 min 45 · Mohamed 1 min 30. Mohamed r�
 
 ## 4. Conception (3:15 – 4:15) · Joud
 
+![Architecture du projet](docs/architecture.png)
+
 > Version détaillée : [ARCHITECTURE.md](ARCHITECTURE.md) (parcours d'une prédiction, fichiers échangés, correspondance avec l'énoncé).
 
 **Modules** : l'interface appelle la logique, elle ne la contient pas.

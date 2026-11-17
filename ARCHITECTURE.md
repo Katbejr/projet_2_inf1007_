@@ -4,6 +4,10 @@ Ce document décrit comment le projet est organisé : les deux programmes, les m
 
 **Principe directeur** (énoncé, ch. 8) : *l'interface appelle la logique, elle ne la contient pas*. Toute la logique (données, modèle, validation) est dans des modules testables sans fenêtre ; `interface.py` ne fait qu'afficher et relayer.
 
+![Architecture du projet](docs/architecture.png)
+
+*Schéma modifiable : [docs/architecture.svg](docs/architecture.svg).*
+
 ---
 
 ## 1. Vue d'ensemble : deux programmes
