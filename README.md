@@ -6,6 +6,8 @@ Application qui estime l'indice de performance d'un étudiant (10 à 100) à par
 
 📽️ **Support de la présentation orale : [PRESENTATION.md](PRESENTATION.md)** (plan minuté, démo, schémas de conception, questions probables).
 
+🏗️ **Architecture du projet : [ARCHITECTURE.md](ARCHITECTURE.md)** (programmes, modules, classes, parcours d'une prédiction, fichiers échangés).
+
 ## Jeu de données
 - Nom : Student Performance (Multiple Linear Regression)
 - Source : https://www.kaggle.com/datasets/nikhil7280/student-performance-multiple-linear-regression
@@ -58,6 +60,7 @@ Couverture (logique dans `src/`, hors `interface.py` et `main.py`, voir `.covera
 | `figures/` | `exploration.png` et `predit_contre_reel.png` |
 | `docs/captures/` | Captures de l'interface (plan B de la démo) |
 | `PRESENTATION.md` | Support de la présentation orale |
+| `ARCHITECTURE.md` | Architecture détaillée (schémas) |
 
 ## Résultats du modèle
 Régression linéaire multiple, évaluée sur l'ensemble de test (30 %, soit 3 000 lignes, `random_state=42`) :
