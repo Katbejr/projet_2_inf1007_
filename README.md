@@ -2,7 +2,9 @@
 
 Application qui estime l'indice de performance d'un étudiant (10 à 100) à partir de ses habitudes d'étude, avec une interface graphique.
 
-**Équipe :** Alex · Joud Katbe · Mohamed Dahmani
+**Équipe :** Alex Le · Joud Katbe · Mohamed Dahmani
+
+📽️ **Support de la présentation orale : [PRESENTATION.md](PRESENTATION.md)** (plan minuté, démo, schémas de conception, questions probables).
 
 ## Jeu de données
 - Nom : Student Performance (Multiple Linear Regression)
@@ -54,6 +56,8 @@ Couverture (logique dans `src/`, hors `interface.py` et `main.py`, voir `.covera
 | `donnees/` | Jeu de données (CSV) |
 | `modeles/` | Modèle sauvegardé + métadonnées JSON (générés, non versionnés) |
 | `figures/` | `exploration.png` et `predit_contre_reel.png` |
+| `docs/captures/` | Captures de l'interface (plan B de la démo) |
+| `PRESENTATION.md` | Support de la présentation orale |
 
 ## Résultats du modèle
 Régression linéaire multiple, évaluée sur l'ensemble de test (30 %, soit 3 000 lignes, `random_state=42`) :
