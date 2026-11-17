@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="960" viewBox="0 0 1600 960" font-family="Inter, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif">
+<defs>
+  <marker id="fin" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
+  <marker id="debut" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
+</defs>
+<rect width="1600" height="960" fill="#ffffff"/>
+<text x="40" y="44" font-size="28" font-weight="800" fill="#111827">Performance étudiante · Architecture</text>
+<text x="40" y="74" font-size="16" fill="#4b5563">L'interface affiche, la logique décide, les fichiers gardent la trace. Le modèle est entraîné une seule fois.</text>
+<rect x="230" y="100" width="500" height="570" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<text x="248" y="128" font-size="16" font-weight="700" fill="#374151">Application · python src/main.py (à chaque lancement)</text>
+<rect x="780" y="100" width="340" height="570" rx="14" fill="#f0fbf4" stroke="#27a35a" stroke-width="2"/>
+<text x="798" y="128" font-size="16" font-weight="700" fill="#374151">Fichiers du projet</text>
+<rect x="1170" y="100" width="400" height="570" rx="14" fill="#fff7ef" stroke="#e07a2e" stroke-width="2"/>
+<text x="1188" y="128" font-size="16" font-weight="700" fill="#374151">Entraînement · src/entrainement.py (une fois)</text>
+<rect x="230" y="710" width="1340" height="150" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<text x="248" y="738" font-size="16" font-weight="700" fill="#374151">Équipe · qualité et GitHub</text>
+<rect x="20" y="320" width="170" height="80" rx="40" fill="#eef0f2" stroke="#6b7280" stroke-width="2"/>
+<text x="105" y="352" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">Utilisateur</text>
+<text x="105" y="376" text-anchor="middle" font-size="13" font-weight="400" fill="#4b5563">un étudiant</text>
+<rect x="270" y="150" width="420" height="90" rx="10" fill="#f3f4f6" stroke="#9aa1a9" stroke-width="2"/>
+<text x="480.0" y="189.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">main.py</text>
+<text x="480.0" y="213.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">point d'entrée · assemble l'application</text>
+<rect x="270" y="305" width="420" height="110" rx="10" fill="#e6efff" stroke="#2f6fed" stroke-width="2"/>
+<text x="480.0" y="342.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">interface.py · Application</text>
+<text x="480.0" y="366.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">Tkinter · formulaire généré · bouton Prédire</text>
+<text x="480.0" y="390.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">graphique Matplotlib intégré · historique</text>
+<rect x="270" y="480" width="420" height="160" rx="10" fill="#fff4cc" stroke="#e0a020" stroke-width="2"/>
+<text x="480.0" y="518.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">Logique testée (sans fenêtre)</text>
+<text x="480.0" y="542.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">donnees.py : JeuDeDonnees · Variable (×3)</text>
+<text x="480.0" y="566.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">modele.py : Modele · chronometre · mae_numpy</text>
+<text x="480.0" y="590.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">exceptions.py : DonneeInvalideError</text>
+<text x="480.0" y="614.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">29 tests pytest · couverture 96 %</text>
+<path d="M805,154 v77 a145.0,9 0 0 0 290,0 v-77" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<ellipse cx="950.0" cy="154" rx="145.0" ry="9" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<text x="950.0" y="194.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">donnees/</text>
+<text x="950.0" y="218.5" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">Student_Performance.csv</text>
+<path d="M805,274 v77 a145.0,9 0 0 0 290,0 v-77" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<ellipse cx="950.0" cy="274" rx="145.0" ry="9" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<text x="950.0" y="314.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">modeles/</text>
+<text x="950.0" y="338.5" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">modele.joblib + metadonnees.json</text>
+<path d="M805,394 v77 a145.0,9 0 0 0 290,0 v-77" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<ellipse cx="950.0" cy="394" rx="145.0" ry="9" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<text x="950.0" y="434.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">historique.csv</text>
+<text x="950.0" y="458.5" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">une ligne par prédiction</text>
+<path d="M805,514 v77 a145.0,9 0 0 0 290,0 v-77" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<ellipse cx="950.0" cy="514" rx="145.0" ry="9" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<text x="950.0" y="554.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">figures/</text>
+<text x="950.0" y="578.5" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">exploration · prédit contre réel</text>
+<rect x="1200" y="150" width="340" height="75" rx="10" fill="#ffe9d6" stroke="#e07a2e" stroke-width="2"/>
+<text x="1370.0" y="181.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">1. Lire et nettoyer</text>
+<text x="1370.0" y="205.5" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">pandas · Yes/No → 1/0</text>
+<rect x="1200" y="250" width="340" height="75" rx="10" fill="#ffe9d6" stroke="#e07a2e" stroke-width="2"/>
+<text x="1370.0" y="281.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">2. Séparer 70 / 30</text>
+<text x="1370.0" y="305.5" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">train_test_split · random_state=42</text>
+<rect x="1200" y="350" width="340" height="75" rx="10" fill="#ffe9d6" stroke="#e07a2e" stroke-width="2"/>
+<text x="1370.0" y="381.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">3. Entraîner + référence</text>
+<text x="1370.0" y="405.5" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">LinearRegression · DummyRegressor</text>
+<rect x="1200" y="450" width="340" height="75" rx="10" fill="#ffe9d6" stroke="#e07a2e" stroke-width="2"/>
+<text x="1370.0" y="481.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">4. Évaluer et sauvegarder</text>
+<text x="1370.0" y="505.5" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">MAE 1,61 contre 16,24 · R² 0,989</text>
+<rect x="1200" y="560" width="340" height="80" rx="10" fill="#ffe9d6" stroke="#e07a2e" stroke-width="2"/>
+<text x="1370.0" y="594.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">5. graphiques.py</text>
+<text x="1370.0" y="618.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">Matplotlib · savefig</text>
+<path d="M1370,225 L1370,248" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<path d="M1370,325 L1370,348" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<path d="M1370,425 L1370,448" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<path d="M1370,525 L1370,558" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<rect x="260" y="760" width="250" height="80" rx="10" fill="#f3f4f6" stroke="#9aa1a9" stroke-width="2"/>
+<text x="385.0" y="794.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">pytest</text>
+<text x="385.0" y="818.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">usuel · limite · erreur</text>
+<rect x="540" y="760" width="250" height="80" rx="10" fill="#f3f4f6" stroke="#9aa1a9" stroke-width="2"/>
+<text x="665.0" y="794.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">coverage</text>
+<text x="665.0" y="818.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">96 % de la logique</text>
+<rect x="820" y="760" width="250" height="80" rx="10" fill="#f3f4f6" stroke="#9aa1a9" stroke-width="2"/>
+<text x="945.0" y="794.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">git commit</text>
+<text x="945.0" y="818.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">Joud · Alex · Mohamed</text>
+<rect x="1100" y="760" width="200" height="80" rx="10" fill="#f3f4f6" stroke="#9aa1a9" stroke-width="2"/>
+<text x="1200.0" y="794.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">GitHub</text>
+<text x="1200.0" y="818.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">dépôt public</text>
+<rect x="1330" y="760" width="220" height="80" rx="10" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<text x="1440.0" y="794.0" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">GitHub Actions</text>
+<text x="1440.0" y="818.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">pytest à chaque push ✔</text>
+<path d="M1070,800 L1098,800" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<path d="M1300,800 L1328,800" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<path d="M192,360 L268,360" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)" marker-start="url(#debut)"/>
+<path d="M480,240 L480,303" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<text x="507" y="278" text-anchor="middle" font-size="14" fill="#111827">crée</text>
+<path d="M480,415 L480,478" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<text x="563" y="452" text-anchor="middle" font-size="14" fill="#111827">valider() · predire()</text>
+<path d="M290,240 C232,330 232,400 292,478" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<path d="M805,312 L752,312 L752,195 L692,195" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<text x="744" y="290" text-anchor="end" font-size="14" fill="#111827">charger() · sans ré-entraîner</text>
+<path d="M805,432 L765,432 L765,380 L692,380" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)" marker-start="url(#debut)"/>
+<text x="770" y="455" text-anchor="end" font-size="14" fill="#111827">ajouter · lire</text>
+<path d="M1095,187 L1198,187" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#fin)"/>
+<text x="1147" y="174" text-anchor="middle" font-size="14" fill="#111827">lire le CSV</text>
+<path d="M1200,487 L1150,487 L1150,312 L1097,312" fill="none" stroke="#e07a2e" stroke-width="2.5" marker-end="url(#fin)"/>
+<text x="1150" y="302" text-anchor="middle" font-size="14" fill="#111827">joblib + JSON</text>
+<path d="M1200,600 L1135,600 L1135,552 L1097,552" fill="none" stroke="#e07a2e" stroke-width="2.5" marker-end="url(#fin)"/>
+<text x="1162" y="620" text-anchor="middle" font-size="14" fill="#111827">savefig</text>
+<rect x="40" y="896" width="20" height="18" rx="4" fill="#ffe9d6" stroke="#e07a2e" stroke-width="2"/>
+<text x="68" y="910" font-size="14" fill="#374151">entraînement (une fois)</text>
+<rect x="307" y="896" width="20" height="18" rx="4" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
+<text x="335" y="910" font-size="14" fill="#374151">fichiers et CI</text>
+<rect x="493" y="896" width="20" height="18" rx="4" fill="#e6efff" stroke="#2f6fed" stroke-width="2"/>
+<text x="521" y="910" font-size="14" fill="#374151">interface Tkinter</text>
+<rect x="706" y="896" width="20" height="18" rx="4" fill="#fff4cc" stroke="#e0a020" stroke-width="2"/>
+<text x="734" y="910" font-size="14" fill="#374151">logique testée : décide</text>
+<rect x="973" y="896" width="20" height="18" rx="4" fill="#f3f4f6" stroke="#9aa1a9" stroke-width="2"/>
+<text x="1001" y="910" font-size="14" fill="#374151">assemblage et outils</text>
+</svg>
