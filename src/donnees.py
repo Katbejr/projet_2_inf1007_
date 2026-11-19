@@ -38,9 +38,11 @@ UNITES = {
 ENTIERS = {"Sample Question Papers Practiced"}
 
 
+# Charge le CSV et le prépare pour que le modèle puisse s'entraîner.
 class JeuDeDonnees:
     """Charge le CSV et prépare les données pour le modèle."""
 
+    # Lit le fichier CSV avec pandas après avoir vérifié qu'il existe.
     def __init__(self, chemin: str) -> None:
         """Lit le CSV `chemin` avec pandas.
 
@@ -51,6 +53,7 @@ class JeuDeDonnees:
         self._chemin = chemin
         self._df = pd.read_csv(chemin) #lit le fichier tout les colonnes et lignes
 
+    # Résume les données (types, manquants, doublons, aberrantes) pour décider quoi nettoyer.
     def inspecter(self) -> dict:
         """Renvoie un résumé : nombre de lignes, types, valeurs manquantes,
         doublons et valeurs aberrantes (hors des bornes logiques)."""
@@ -66,6 +69,7 @@ class JeuDeDonnees:
             "aberrantes": aberrantes,
         }
 
+    # Transforme Yes/No en 1/0 pour que le modèle ne reçoive que des nombres.
     def nettoyer(self) -> None:
         """Encode « Yes »/« No » en 1/0.
 
@@ -77,6 +81,7 @@ class JeuDeDonnees:
             return
         self._df[col] = self._df[col].map({"Yes": 1, "No": 0}) #transforme les Yes and No en 1 0, mais si valeur innatendu => NaN (.replace serait aussi ideal)
 
+    # Coupe les données en entraînement et test pour évaluer le modèle honnêtement.
     def separer(self, taille_test: float = 0.3, graine: int = 42) -> tuple:
         """Renvoie X_train, X_test, y_train, y_test (train_test_split, graine fixée).
 
@@ -87,11 +92,13 @@ class JeuDeDonnees:
         return train_test_split(X, y, test_size=taille_test, random_state=graine) #test => nouveau prediction, train => etudie resultat et donnees
         #graine choisi un "shuffle"
 
+    # Donne une copie du tableau sans permettre de modifier l'original.
     @property
     def df(self) -> pd.DataFrame:
         """Copie du tableau (lecture seule)."""
         return self._df.copy()
 
+    # Permet d'écrire len(jeu) pour connaître le nombre de lignes.
     def __len__(self) -> int:
         """Nombre de lignes du jeu de données."""
         return len(self._df)
@@ -104,18 +111,22 @@ from abc import ABC, abstractmethod
 from exceptions import DonneeInvalideError
 
 
+# Classe parente abstraite d'une saisie de l'interface ; chaque enfant valide à sa façon.
 class Variable(ABC):
     """Classe parente abstraite : une caractéristique d'entrée du modèle."""
 
+    # Mémorise le nom de la colonne que représente cette variable.
     def __init__(self, nom: str) -> None:
         """Reçoit le nom de la colonne (protégé : lecture par la propriété `nom`)."""
         self._nom = nom
 
+    # Donne le nom de la colonne en lecture seule.
     @property
     def nom(self) -> str:
         """Nom de la colonne (lecture seule)."""
         return self._nom
 
+    # Méthode que chaque enfant doit redéfinir pour vérifier une saisie.
     @abstractmethod
     def valider(self, saisie: str) -> float | str:
         """Convertit et valide une saisie texte.
@@ -125,18 +136,22 @@ class Variable(ABC):
         Échoue : lève DonneeInvalideError si la saisie est invalide.
         """
 
+    # Texte gris affiché à côté du champ ; vide par défaut.
     def aide(self) -> str:
         """Court texte d'aide affiché à côté du champ (vide par défaut)."""
         return ""
 
+    # Affiche la variable de façon lisible quand on la print.
     def __repr__(self) -> str:
         """Représentation lisible, par exemple VariableNumerique('Sleep Hours')."""
         return f"{type(self).__name__}({self._nom!r})"
 
 
+# Variable numérique qui accepte seulement les nombres dans un intervalle.
 class VariableNumerique(Variable):
     """Variable numérique bornée par un intervalle [minimum, maximum]."""
 
+    # Mémorise les bornes, l'unité et si seuls les entiers sont permis.
     def __init__(self, nom: str, minimum: float, maximum: float, unite: str = "",
                  entier: bool = False) -> None:
         """Reçoit le nom de la colonne, l'intervalle permis [minimum, maximum],
@@ -148,27 +163,32 @@ class VariableNumerique(Variable):
         self._unite = unite
         self._entier = entier
 
+    # Écrit une borne avec une virgule (9,0) ou sans (9) si entier.
     def _formater(self, valeur: float) -> str:
         """Écrit une borne : « 9 » si entier, sinon « 9,0 » (virgule décimale)."""
         if self._entier:
             return f"{valeur:g}"
         return f"{valeur:.1f}".replace(".", ",")
 
+    # Donne la plus petite valeur acceptée.
     @property
     def minimum(self) -> float:
         """Plus petite valeur acceptée (lecture seule)."""
         return self._minimum
 
+    # Donne la plus grande valeur acceptée.
     @property
     def maximum(self) -> float:
         """Plus grande valeur acceptée (lecture seule)."""
         return self._maximum
 
+    # Construit le texte gris des bornes et de l'unité, ex. 1,0 – 9,0 h / semaine.
     def aide(self) -> str:
         """Bornes et unité, par exemple « 1,0 – 9,0 h / semaine » (ou « 0 – 9 » si entier)."""
         texte = f"{self._formater(self._minimum)} – {self._formater(self._maximum)}"
         return f"{texte} {self._unite}" if self._unite else texte
 
+    # Convertit la saisie en nombre et refuse le vide, le texte ou le hors intervalle.
     def valider(self, saisie: str) -> float:
         """Convertit la saisie en nombre et vérifie qu'elle est dans [minimum, maximum].
 
@@ -193,19 +213,23 @@ class VariableNumerique(Variable):
         return valeur
 
 
+# Variable à choix (ex. Yes/No) affichée en liste déroulante.
 class VariableCategorielle(Variable):
     """Variable catégorielle : la saisie doit faire partie des valeurs permises."""
 
+    # Mémorise la liste des valeurs permises.
     def __init__(self, nom: str, valeurs: list[str]) -> None:
         """Reçoit le nom de la colonne et la liste des valeurs permises."""
         super().__init__(nom)
         self._valeurs = list(valeurs)
 
+    # Donne les choix possibles pour remplir la liste déroulante.
     @property
     def valeurs(self) -> list[str]:
         """Valeurs possibles (pour remplir la liste déroulante)."""
         return list(self._valeurs)
     
+    # Refuse toute saisie qui n'est pas dans la liste permise.
     def valider(self, saisie: str) -> str:
         """Vérifie que la saisie fait partie des valeurs permises.
 
@@ -220,6 +244,7 @@ class VariableCategorielle(Variable):
 # ---------------------------------------------------------------------------
 # Historique des prédictions (ch. 5 : os, with, vérifier l'existence)
 # ---------------------------------------------------------------------------
+# Ajoute une prédiction à la fin du fichier CSV d'historique.
 def ajouter_historique(chemin: str, ligne: dict) -> None:
     """Ajoute une prédiction (dict) à la fin du fichier CSV d'historique.
 
@@ -233,6 +258,7 @@ def ajouter_historique(chemin: str, ligne: dict) -> None:
         ecrivain.writerow(ligne)
 
 
+# Relit toutes les prédictions passées pour les afficher.
 def lire_historique(chemin: str) -> list[dict]:
     """Renvoie la liste des prédictions passées ([] si le fichier n'existe pas)."""
     if not os.path.exists(chemin):
@@ -244,6 +270,7 @@ def lire_historique(chemin: str) -> list[dict]:
 # ---------------------------------------------------------------------------
 # Métadonnées du modèle : l'interface se construit à partir d'elles (§3.6)
 # ---------------------------------------------------------------------------
+# Calcule bornes et catégories des colonnes pour les enregistrer dans le JSON.
 def decrire_variables(df: pd.DataFrame) -> dict:
     """Décrit les caractéristiques d'entrée à partir des données brutes.
 
@@ -261,6 +288,7 @@ def decrire_variables(df: pd.DataFrame) -> dict:
             "categorielles": categorielles}
 
 
+# Recrée les objets Variable à partir du JSON pour construire le formulaire.
 def variables_depuis_metadonnees(metadonnees: dict) -> list[Variable]:
     """Recrée la liste des Variable dans l'ordre des colonnes du modèle.
 

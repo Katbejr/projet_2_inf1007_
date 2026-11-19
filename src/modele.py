@@ -15,6 +15,7 @@ from sklearn.metrics import r2_score
 from exceptions import ModeleIntrouvableError
 
 
+# Décorateur qui mesure le temps d'exécution d'une fonction (ici l'entraînement).
 def chronometre(fonction: Callable) -> Callable:
     """Décorateur (ch. 7) : mesure la durée d'exécution de `fonction`.
 
@@ -22,6 +23,7 @@ def chronometre(fonction: Callable) -> Callable:
     Renvoie : une fonction enveloppe qui renvoie le même résultat ; la durée
     du dernier appel (en secondes) est conservée dans `enveloppe.derniere_duree`.
     """
+    # Appelle la vraie fonction, note sa durée et renvoie son résultat.
     @functools.wraps(fonction)
     def enveloppe(*args: Any, **kwargs: Any) -> Any:
         """Appelle `fonction`, mémorise sa durée et renvoie son résultat."""
@@ -34,6 +36,7 @@ def chronometre(fonction: Callable) -> Callable:
     return enveloppe
 
 
+# Calcule l'erreur absolue moyenne avec NumPy, sans boucle.
 def mae_numpy(y_vrai: np.ndarray, y_predit: np.ndarray) -> float:
     """Erreur absolue moyenne calculée avec NumPy, sans boucle (ch. 12).
 
@@ -41,6 +44,7 @@ def mae_numpy(y_vrai: np.ndarray, y_predit: np.ndarray) -> float:
     """
     return float(np.mean(np.abs(np.asarray(y_vrai) - np.asarray(y_predit))))
 
+# Transforme la prédiction en phrase simple pour un non-informaticien.
 def formuler_resultat(indice: float, mae: float | None = None) -> str:
     """Phrase lisible par un non-informaticien pour une prédiction.
 
@@ -57,12 +61,14 @@ def formuler_resultat(indice: float, mae: float | None = None) -> str:
     return phrase
 
 
+# Regroupe le modèle scikit-learn, sa référence et ses métadonnées.
 class Modele:
     """Enveloppe le modèle scikit-learn, sa référence et ses métadonnées."""
 
     FICHIER_MODELE = "modele.joblib"
     FICHIER_META = "metadonnees.json"
 
+    # Crée le modèle (régression linéaire) et la référence (moyenne).
     def __init__(self, estimateur: Any = None) -> None:
         """Reçoit un estimateur scikit-learn (LinearRegression par défaut).
 
@@ -73,6 +79,7 @@ class Modele:
         self._reference = DummyRegressor(strategy="mean")
         self._metadonnees: dict = {}
 
+    # Entraîne le modèle et la référence sur les données d'entraînement.
     @chronometre
     def entrainer(self, X_train: pd.DataFrame, y_train: pd.Series) -> None:
         """Entraîne le modèle ET la référence sur l'ensemble d'entraînement.
@@ -82,6 +89,7 @@ class Modele:
         self._estimateur.fit(X_train, y_train)
         self._reference.fit(X_train, y_train)
 
+    # Compare le modèle à la référence sur les données de test (MAE, R²).
     def evaluer(self, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
         """Note le modèle et la référence sur l'ensemble de test (aucun fit ici).
         
@@ -97,10 +105,12 @@ class Modele:
         }
 
 
+    # Donne l'indice de performance prédit pour de nouvelles lignes.
     def predire(self, X: pd.DataFrame) -> np.ndarray:
         """Renvoie les indices de performance prédits pour les lignes de X."""
         return self._estimateur.predict(X)
 
+    # Enregistre le modèle (joblib) et ses métadonnées (JSON) sur le disque.
     def sauvegarder(self, dossier: str, metadonnees: dict) -> None:
         """Écrit le modèle (joblib) et les métadonnées (JSON) dans `dossier`.
 
@@ -118,6 +128,7 @@ class Modele:
         self._metadonnees = dict(metadonnees)
 
                                    
+    # Relit un modèle déjà entraîné pour ne pas le ré-entraîner à chaque lancement.
     @classmethod
     def charger(cls, dossier: str) -> "Modele":
         """Recharge un modèle sauvegardé.
@@ -140,24 +151,29 @@ class Modele:
         modele._metadonnees = metadonnees
         return modele
 
+    # Donne une copie des métadonnées (bornes, catégories, métriques).
     @property
     def metadonnees(self) -> dict:
         """Copie des métadonnées (vide tant que le modèle n'est ni sauvegardé ni chargé)."""
         return dict(self._metadonnees)
 
+    # Affiche le modèle de façon lisible quand on le print.
     def __repr__(self) -> str:
         """Représentation lisible, par exemple Modele(LinearRegression)."""
         return f"Modele({type(self._estimateur).__name__})"
 
 
+# Essai de deux modèles, un par groupe d'activité, comparé au modèle unique.
 class ModeleParGroupe:
     """Deux régressions : une par valeur d'« Extracurricular Activities »."""
     COLONNE = "Extracurricular Activities"
 
+    # Crée un modèle pour chaque groupe (avec et sans activité).
     def __init__(self) -> None:
         """Crée un Modele par groupe (0 = sans activité, 1 = avec) : composition."""
         self._modeles = {0: Modele(), 1: Modele()}
 
+    # Entraîne chaque modèle seulement sur les lignes de son groupe.
     def entrainer(self, X_train: pd.DataFrame, y_train: pd.Series) -> None:
         """Entraîne chaque Modele sur les lignes de son groupe, sans la colonne de groupe.
 
@@ -167,6 +183,7 @@ class ModeleParGroupe:
             masque = X_train[self.COLONNE] == groupe
             modele.entrainer(X_train[masque].drop(columns=[self.COLONNE]), y_train[masque])
 
+    # Prédit chaque ligne avec le modèle de son groupe.
     def predire(self, X: pd.DataFrame) -> np.ndarray:
         """Prédit chaque ligne avec le Modele de son groupe.
 
@@ -180,6 +197,7 @@ class ModeleParGroupe:
                 predictions[masque] = modele.predire(X[masque].drop(columns=[self.COLONNE]))
         return predictions
 
+    # Mesure la MAE et le R² pour comparer avec le modèle unique.
     def evaluer(self, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
         """Renvoie {"mae": ..., "r2": ...} sur l'ensemble de test (aucun fit ici)."""
         predictions = self.predire(X_test)
@@ -188,6 +206,7 @@ class ModeleParGroupe:
             "r2": float(r2_score(y_test, predictions)),
         }
 
+    # Affiche le modèle composé de façon lisible.
     def __repr__(self) -> str:
         """Représentation lisible du modèle composé."""
         return "ModeleParGroupe(2 x Modele(LinearRegression))"

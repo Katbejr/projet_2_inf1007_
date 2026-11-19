@@ -18,9 +18,11 @@ from matplotlib.figure import Figure
 
 VARIABLE_GRAPHIQUE = "Hours Studied"  
 
+# Fenêtre principale : contient le modèle et les variables (composition).
 class Application:
     """Fenêtre principale. Composition : contient le Modele et la liste des Variable."""
 
+    # Crée la fenêtre, le formulaire et la zone du graphique.
     def __init__(self, modele: Modele, variables: list[Variable], chemin_historique: str) -> None:
         """Reçoit le modèle chargé, ses variables d'entrée et le chemin de l'historique CSV.
 
@@ -43,10 +45,12 @@ class Application:
         self.construire_formulaire()
         self.creer_graphique()
 
+    # Affiche la fenêtre et attend les actions de l'utilisateur.
     def lancer(self) -> None:
         """Ouvre la fenêtre et attend les actions de l'utilisateur."""
         self._fenetre.mainloop()
 
+    # Crée un champ par variable avec son texte d'aide et les boutons.
     def construire_formulaire(self) -> None:
         """Un champ par variable : champ texte (numérique) ou liste déroulante (catégorielle)."""
         for numero, variable in enumerate(self._variables):
@@ -76,6 +80,7 @@ class Application:
             row=len(self._variables) + 2, column=0, columnspan=3, pady=5)
     
 
+    # Valide les saisies, prédit, affiche le résultat et l'enregistre dans l'historique.
     def predire(self) -> None:
         """Bouton « Prédire » : valide chaque saisie (try / except DonneeInvalideError),
         affiche un message clair en cas d'erreur, sinon la prédiction en langage simple,
@@ -105,6 +110,7 @@ class Application:
             messagebox.showwarning(
                 "Historique", f"La prédiction n'a pas pu être enregistrée : {erreur}")
 
+    # Place une figure Matplotlib vide dans la fenêtre Tkinter.
     def creer_graphique(self) -> None:
         """Crée la figure Matplotlib vide et l'intègre dans la fenêtre Tkinter."""
         self._figure = Figure(figsize=(5, 3.8))
@@ -114,6 +120,7 @@ class Application:
         self._axes.set_title("Le graphique apparaîtra après une prédiction", fontsize=11)
         self._canevas.draw()
 
+    # Trace l'effet des heures d'étude sur l'indice avec le cas de l'utilisateur.
     def afficher_graphique(self, ligne: dict, indice: float) -> None:
         """Graphique Matplotlib intégré (titre, axes, légende)."""
         heures = list(range(1, 10))
@@ -132,6 +139,7 @@ class Application:
         self._figure.tight_layout()
         self._canevas.draw()
 
+    # Ouvre une fenêtre qui liste les prédictions passées.
     def afficher_historique(self) -> None:
         """Montre les prédictions passées (lire_historique)."""
 

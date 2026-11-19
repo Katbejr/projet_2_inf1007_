@@ -10,6 +10,7 @@ from interface import Application
 from modele import Modele
 
 
+# Charge le modèle sauvegardé, crée les variables et lance l'interface.
 def main() -> None:
     """Charge le modèle et ses métadonnées, construit les variables et lance l'interface."""
     try:
