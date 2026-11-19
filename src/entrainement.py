@@ -11,6 +11,7 @@ from graphiques import graphique_exploration, graphique_predit_reel
 from modele import Modele
 
 
+# Fait tout l'entraînement une seule fois puis sauvegarde le modèle et les figures.
 def entrainer_et_sauvegarder(chemin_donnees: str, dossier_modeles: str,
                              dossier_figures: str) -> dict:
     """Explore, entraîne, évalue puis sauvegarde le modèle.

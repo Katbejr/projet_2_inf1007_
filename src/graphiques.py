@@ -12,6 +12,7 @@ from matplotlib.figure import Figure
 from donnees import COLONNE_CIBLE
 
 
+# Enregistre le graphique d'exploration des données montré à la présentation.
 def graphique_exploration(df: pd.DataFrame, chemin: str) -> None:
     """Enregistre deux graphiques d'exploration dans `chemin` (PNG).
 
@@ -38,6 +39,7 @@ def graphique_exploration(df: pd.DataFrame, chemin: str) -> None:
     _enregistrer(figure, chemin)
 
 
+# Enregistre le graphique prédit contre réel pour juger la qualité du modèle.
 def graphique_predit_reel(y_reel: np.ndarray, y_predit: np.ndarray, chemin: str) -> None:
     """Enregistre le graphique « prédit contre réel » dans `chemin` (PNG).
 
@@ -62,6 +64,7 @@ def graphique_predit_reel(y_reel: np.ndarray, y_predit: np.ndarray, chemin: str)
     _enregistrer(figure, chemin)
 
 
+# Crée le dossier au besoin puis enregistre la figure avec savefig.
 def _enregistrer(figure: Figure, chemin: str) -> None:
     """Crée le dossier au besoin puis enregistre la figure (savefig)."""
     dossier = os.path.dirname(chemin)
