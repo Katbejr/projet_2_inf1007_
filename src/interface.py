@@ -60,17 +60,20 @@ class Application:
                 champ = ttk.Entry(self._cadre_formulaire)
             champ.grid(row=numero, column=1, padx=8, pady=4)
             self._champs[variable.nom] = champ
+            if variable.aide():
+                ttk.Label(self._cadre_formulaire, text=variable.aide(),
+                          foreground="gray").grid(row=numero, column=2, sticky="w")
 
         ttk.Label(self._cadre_formulaire, textvariable=self._resultat,
                   wraplength=300).grid(
-            row=len(self._variables) + 1, column=0, columnspan=2, pady=10)
+            row=len(self._variables) + 1, column=0, columnspan=3, pady=10)
 
         ttk.Button(self._cadre_formulaire, text="Prédire",
                    command=self.predire).grid(
-            row=len(self._variables), column=0, columnspan=2, pady=10)
+            row=len(self._variables), column=0, columnspan=3, pady=10)
         ttk.Button(self._cadre_formulaire, text="Voir l'historique",
                    command=self.afficher_historique).grid(
-            row=len(self._variables) + 2, column=0, columnspan=2, pady=5)
+            row=len(self._variables) + 2, column=0, columnspan=3, pady=5)
     
 
     def predire(self) -> None:
@@ -123,7 +126,7 @@ class Application:
         self._axes.scatter([ligne[VARIABLE_GRAPHIQUE]], [indice],
                            color="red", zorder=3, label="Votre cas")
         self._axes.set_title("Effet des heures d'étude sur l'indice", fontsize=11)
-        self._axes.set_xlabel("Heures d'étude par jour")
+        self._axes.set_xlabel("Heures d'étude par semaine")
         self._axes.set_ylabel("Indice de performance estimé")
         self._axes.legend()
         self._figure.tight_layout()

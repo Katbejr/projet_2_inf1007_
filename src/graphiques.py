@@ -32,7 +32,7 @@ def graphique_exploration(df: pd.DataFrame, chemin: str) -> None:
     droite.set_title("Indice selon les notes antérieures")
     droite.set_xlabel("Notes antérieures (Previous Scores)")
     droite.set_ylabel("Indice de performance")
-    figure.colorbar(nuage, ax=droite, label="Heures d'étude par jour")
+    figure.colorbar(nuage, ax=droite, label="Heures d'étude par semaine")
 
     figure.tight_layout()
     _enregistrer(figure, chemin)
