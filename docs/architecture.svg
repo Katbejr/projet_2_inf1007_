@@ -29,7 +29,7 @@
 <text x="480.0" y="542.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">donnees.py : JeuDeDonnees · Variable (×3)</text>
 <text x="480.0" y="566.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">modele.py : Modele · chronometre · mae_numpy</text>
 <text x="480.0" y="590.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">exceptions.py : DonneeInvalideError</text>
-<text x="480.0" y="614.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">29 tests pytest · couverture 96 %</text>
+<text x="480.0" y="614.0" text-anchor="middle" font-size="15" font-weight="400" fill="#4b5563">30 tests pytest · couverture 96 %</text>
 <path d="M805,154 v77 a145.0,9 0 0 0 290,0 v-77" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
 <ellipse cx="950.0" cy="154" rx="145.0" ry="9" fill="#e6f7ec" stroke="#27a35a" stroke-width="2"/>
 <text x="950.0" y="194.5" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">donnees/</text>

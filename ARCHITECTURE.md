@@ -237,7 +237,7 @@ Les fichiers de `modeles/` et `historique.csv` sont **générés** : ils ne sont
 flowchart LR
     push["git push"] --> ci["GitHub Actions<br/>.github/workflows/tests.yml"]
     ci --> install["pip install -r requirements.txt"]
-    install --> pytest["pytest -v<br/>29 tests"]
+    install --> pytest["pytest -v<br/>30 tests"]
     pytest --> verdict{"Tous passent ?"}
     verdict -- oui --> vert["✅ marque verte"]
     verdict -- non --> rouge["❌ marque rouge"]
@@ -259,7 +259,7 @@ Couverture de la logique (`src/` hors `interface.py` et `main.py`) : **96 %**.
 | Ch. 5 | CSV, JSON, chemins `os`, `with`, existence vérifiée | `donnees.py` (chemins, historique), `modele.py` (`sauvegarder`, `charger`) |
 | Ch. 6 | Fonctions courtes, docstrings, annotations, `return` | Tous les modules de `src/` |
 | Ch. 7 | ≥ 4 modules + `main.py` ; outil du chapitre | 7 modules ; décorateur `chronometre`, `lambda` dans `decrire_variables` |
-| Ch. 8 | Exceptions précises, exception personnalisée, ≥ 8 tests, couverture, CI | `exceptions.py`, 29 tests, `.coveragerc`, `tests.yml` |
+| Ch. 8 | Exceptions précises, exception personnalisée, ≥ 8 tests, couverture, CI | `exceptions.py`, 30 tests, `.coveragerc`, `tests.yml` |
 | Ch. 9–11 | ≥ 3 classes, héritage, polymorphisme, composition, méthode spéciale | Voir la section 3 |
 | Ch. 12 | Calcul vectorisé NumPy | `mae_numpy` (sans boucle), comparée à scikit-learn dans un test |
 | Ch. 13 | 2 graphiques, documentation citée, journal d'IA | `graphiques.py` + graphique de l'interface, README, `JOURNAL_IA.md` |

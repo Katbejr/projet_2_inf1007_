@@ -27,6 +27,15 @@ BORNES = {
 }
 
 
+# Unités affichées en gris à côté des champs de l'interface
+UNITES = {
+    "Hours Studied": "h / semaine",
+    "Previous Scores": "note sur 100",
+    "Sleep Hours": "h / jour",
+    "Sample Question Papers Practiced": "examens / semaine",
+}
+
+
 class JeuDeDonnees:
     """Charge le CSV et prépare les données pour le modèle."""
 
@@ -114,6 +123,10 @@ class Variable(ABC):
         Échoue : lève DonneeInvalideError si la saisie est invalide.
         """
 
+    def aide(self) -> str:
+        """Court texte d'aide affiché à côté du champ (vide par défaut)."""
+        return ""
+
     def __repr__(self) -> str:
         """Représentation lisible, par exemple VariableNumerique('Sleep Hours')."""
         return f"{type(self).__name__}({self._nom!r})"
@@ -122,11 +135,13 @@ class Variable(ABC):
 class VariableNumerique(Variable):
     """Variable numérique bornée par un intervalle [minimum, maximum]."""
 
-    def __init__(self, nom: str, minimum: float, maximum: float) -> None:
-        """Reçoit le nom de la colonne et l'intervalle permis [minimum, maximum]."""
+    def __init__(self, nom: str, minimum: float, maximum: float, unite: str = "") -> None:
+        """Reçoit le nom de la colonne, l'intervalle permis [minimum, maximum]
+        et, au besoin, l'unité affichée dans l'aide (ex. « h / semaine »)."""
         super().__init__(nom)
         self._minimum = minimum
         self._maximum = maximum
+        self._unite = unite
 
     @property
     def minimum(self) -> float:
@@ -137,6 +152,11 @@ class VariableNumerique(Variable):
     def maximum(self) -> float:
         """Plus grande valeur acceptée (lecture seule)."""
         return self._maximum
+
+    def aide(self) -> str:
+        """Bornes et unité, par exemple « 1 – 9 h / semaine »."""
+        texte = f"{self._minimum:g} – {self._maximum:g}"
+        return f"{texte} {self._unite}" if self._unite else texte
 
     def valider(self, saisie: str) -> float:
         """Convertit la saisie en nombre et vérifie qu'elle est dans [minimum, maximum].
@@ -237,7 +257,7 @@ def variables_depuis_metadonnees(metadonnees: dict) -> list[Variable]:
     for nom in metadonnees["colonnes"]:
         if nom in metadonnees["numeriques"]:
             minimum, maximum = metadonnees["numeriques"][nom]
-            variables.append(VariableNumerique(nom, minimum, maximum))
+            variables.append(VariableNumerique(nom, minimum, maximum, UNITES.get(nom, "")))
         elif nom in metadonnees["categorielles"]:
             variables.append(VariableCategorielle(nom, metadonnees["categorielles"][nom]))
         else:

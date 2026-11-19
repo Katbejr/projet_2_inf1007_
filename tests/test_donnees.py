@@ -62,6 +62,13 @@ def test_numerique_virgule_decimale() -> None:
     assert v.valider(" 7,5 ") == pytest.approx(7.5)
 
 
+def test_aide_affiche_bornes_et_unite() -> None:
+    """Texte gris de l'interface : bornes sans « .0 » inutile, puis l'unité (cas usuel)."""
+    assert VariableNumerique("Hours Studied", 1.0, 9.0, "h / semaine").aide() == "1 – 9 h / semaine"
+    assert VariableNumerique("Sleep Hours", 4, 9).aide() == "4 – 9"
+    assert VariableCategorielle("Extracurricular Activities", ["No", "Yes"]).aide() == ""
+
+
 def test_numerique_borne_exacte() -> None:
     """Borne maximale acceptée (cas limite)."""
     v = VariableNumerique("Sleep Hours", 4, 9)
