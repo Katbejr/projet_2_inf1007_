@@ -34,6 +34,8 @@ UNITES = {
     "Sleep Hours": "h / jour",
     "Sample Question Papers Practiced": "examens / semaine",
 }
+# Variables qui n'acceptent que des nombres entiers (un nombre d'examens)
+ENTIERS = {"Sample Question Papers Practiced"}
 
 
 class JeuDeDonnees:
@@ -135,13 +137,22 @@ class Variable(ABC):
 class VariableNumerique(Variable):
     """Variable numérique bornée par un intervalle [minimum, maximum]."""
 
-    def __init__(self, nom: str, minimum: float, maximum: float, unite: str = "") -> None:
-        """Reçoit le nom de la colonne, l'intervalle permis [minimum, maximum]
-        et, au besoin, l'unité affichée dans l'aide (ex. « h / semaine »)."""
+    def __init__(self, nom: str, minimum: float, maximum: float, unite: str = "",
+                 entier: bool = False) -> None:
+        """Reçoit le nom de la colonne, l'intervalle permis [minimum, maximum],
+        au besoin l'unité affichée dans l'aide (ex. « h / semaine ») et si
+        seuls les nombres entiers sont acceptés."""
         super().__init__(nom)
         self._minimum = minimum
         self._maximum = maximum
         self._unite = unite
+        self._entier = entier
+
+    def _formater(self, valeur: float) -> str:
+        """Écrit une borne : « 9 » si entier, sinon « 9,0 » (virgule décimale)."""
+        if self._entier:
+            return f"{valeur:g}"
+        return f"{valeur:.1f}".replace(".", ",")
 
     @property
     def minimum(self) -> float:
@@ -154,15 +165,16 @@ class VariableNumerique(Variable):
         return self._maximum
 
     def aide(self) -> str:
-        """Bornes et unité, par exemple « 1 – 9 h / semaine »."""
-        texte = f"{self._minimum:g} – {self._maximum:g}"
+        """Bornes et unité, par exemple « 1,0 – 9,0 h / semaine » (ou « 0 – 9 » si entier)."""
+        texte = f"{self._formater(self._minimum)} – {self._formater(self._maximum)}"
         return f"{texte} {self._unite}" if self._unite else texte
 
     def valider(self, saisie: str) -> float:
         """Convertit la saisie en nombre et vérifie qu'elle est dans [minimum, maximum].
 
         La virgule décimale est acceptée (« 7,5 » devient 7.5).
-        Échoue : DonneeInvalideError si vide, non numérique ou hors intervalle.
+        Échoue : DonneeInvalideError si vide, non numérique, décimal alors
+        qu'un entier est attendu, ou hors intervalle.
         """
         if not saisie.strip():
             raise DonneeInvalideError(f"{self.nom} : la saisie est vide.")
@@ -171,9 +183,12 @@ class VariableNumerique(Variable):
         except ValueError:
             raise DonneeInvalideError(
                 f"{self.nom} : « {saisie} » n'est pas un nombre (exemple : 7 ou 7,5).")
+        if self._entier and not valeur.is_integer():
+            raise DonneeInvalideError(f"{self.nom} : doit être un nombre entier (exemple : 3).")
         if not self._minimum <= valeur <= self._maximum:
             raise DonneeInvalideError(
-                f"{self.nom} : doit être entre {self._minimum} et {self._maximum}."
+                f"{self.nom} : doit être entre {self._formater(self._minimum)}"
+                f" et {self._formater(self._maximum)}."
             )
         return valeur
 
@@ -257,7 +272,8 @@ def variables_depuis_metadonnees(metadonnees: dict) -> list[Variable]:
     for nom in metadonnees["colonnes"]:
         if nom in metadonnees["numeriques"]:
             minimum, maximum = metadonnees["numeriques"][nom]
-            variables.append(VariableNumerique(nom, minimum, maximum, UNITES.get(nom, "")))
+            variables.append(VariableNumerique(nom, minimum, maximum,
+                                               UNITES.get(nom, ""), nom in ENTIERS))
         elif nom in metadonnees["categorielles"]:
             variables.append(VariableCategorielle(nom, metadonnees["categorielles"][nom]))
         else:

@@ -55,7 +55,7 @@ Temps de parole : Joud 1 min 45 · Alex 1 min 45 · Mohamed 1 min 30. Mohamed r�
 | 1 | Saisir 7 · 99 · Yes · 9 · 1, puis **Prédire** | « 92 sur 100 (± 1,6 point) » en langage simple |
 | 2 | Commenter le graphique | Courbe selon les heures d'étude, notre cas en rouge |
 | 3 | Mettre « abc » dans *Previous Scores* | Message clair, **aucun plantage** |
-| 4 | Mettre 15 dans *Hours Studied* | « doit être entre 1.0 et 9.0 » (bornes lues dans le JSON) |
+| 4 | Mettre 15 dans *Hours Studied* | « doit être entre 1,0 et 9,0 » (bornes lues dans le JSON) |
 | 5 | Saisir « 3,5 » heures et *No* | Virgule acceptée → 81 sur 100 |
 | 6 | **Voir l'historique** | Les prédictions sont enregistrées dans `historique.csv` |
 

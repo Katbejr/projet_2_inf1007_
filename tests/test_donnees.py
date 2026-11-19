@@ -64,9 +64,18 @@ def test_numerique_virgule_decimale() -> None:
 
 def test_aide_affiche_bornes_et_unite() -> None:
     """Texte gris de l'interface : bornes sans « .0 » inutile, puis l'unité (cas usuel)."""
-    assert VariableNumerique("Hours Studied", 1.0, 9.0, "h / semaine").aide() == "1 – 9 h / semaine"
-    assert VariableNumerique("Sleep Hours", 4, 9).aide() == "4 – 9"
+    assert VariableNumerique("Hours Studied", 1.0, 9.0, "h / semaine").aide() == "1,0 – 9,0 h / semaine"
+    assert VariableNumerique("Sleep Hours", 4, 9).aide() == "4,0 – 9,0"
+    assert VariableNumerique("Papers", 0, 9, "examens", entier=True).aide() == "0 – 9 examens"
     assert VariableCategorielle("Extracurricular Activities", ["No", "Yes"]).aide() == ""
+
+
+def test_entier_refuse_decimale() -> None:
+    """Un nombre d'examens doit être entier : 3 accepté, 2,5 refusé (cas d'erreur)."""
+    v = VariableNumerique("Sample Question Papers Practiced", 0, 9, entier=True)
+    assert v.valider("3") == pytest.approx(3.0)
+    with pytest.raises(DonneeInvalideError):
+        v.valider("2,5")
 
 
 def test_numerique_borne_exacte() -> None:
